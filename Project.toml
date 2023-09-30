@@ -1,0 +1,13 @@
+name = "VLBISkyRegularizers"
+uuid = "272825ce-20a7-4fd6-83b3-a151cd6ff564"
+authors = ["Andy Nilipour", "Kazunori Akiyama"]
+version = "1.0.0-DEV"
+
+[compat]
+julia = "1.9.3"
+
+[extras]
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+
+[targets]
+test = ["Test"]
