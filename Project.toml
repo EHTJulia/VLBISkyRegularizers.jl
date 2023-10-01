@@ -8,6 +8,7 @@ DocStringExtensions = "ffbed154-4ef7-542d-bbb7-c09d3a79fcae"
 VLBISkyModels = "d6343c73-7174-4e0f-bb64-562643efbeca"
 
 [compat]
+VLBISkyModels = "0.3"
 julia = "1.9.3"
 
 [extras]
