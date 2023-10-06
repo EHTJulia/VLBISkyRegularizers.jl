@@ -20,31 +20,33 @@ end
 functionlabel(::L1Norm) = :l1norm
 
 """
-    l1norm(I::AbstractArray)
+    l1norm(I::IntensityMap)
 
 Base function of the l1norm.
 
 # Arguments
-- `I::AbstractArray`: the image
+- `I::IntensityMap`: the image
 """
-@inline l1norm(x::AbstractArray) = @inbounds sum(abs.(x))
+@inline l1norm(x::IntensityMap) = @inbounds sum(abs.(x))
 
 """
-    l1norm(I::AbstractArray, w::Number)
+    l1norm(I::IntensityMap, w::Number)
 
 Base function of the l1norm.
 
 # Arguments
-- `I::AbstractArray`: the image
+- `I::IntensityMap`: the image
 - `w::Number`: the regularization weight
 """
-@inline l1norm(x::AbstractArray, w::Number) = w * l1norm(x)
+@inline l1norm(x::IntensityMap, w::Number) = w * l1norm(x)
 
 
+@inline transform_linear_forward(skymodel::IntensityMap, x::AbstractArray) = x
+
 """
-    evaluate(::AbstractRegularizer, skymodel::AbstractImage2DModel, x::AbstractArray)
+    evaluate(::AbstractRegularizer, skymodel::IntensityMap, x::AbstractArray)
 """
-# skymodel::AbstractImage2DModel, x::AbstractArray needs to be changed!
-function evaluate(::LinearDomain, reg::L1Norm, skymodel::AbstractImage2DModel, x::AbstractArray)
+# skymodel::AbstractImage2DModel, x::AbstractArray needs to be changed! 
+function evaluate(::LinearDomain, reg::L1Norm, skymodel::IntensityMap, x::AbstractArray)
     return l1norm(transform_linear_forward(skymodel, x), reg.weight)
 end

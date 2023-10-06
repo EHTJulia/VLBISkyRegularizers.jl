@@ -79,7 +79,7 @@ on the given image model. In default, return evaluate(domain(reg), reg, skymodel
 - `x::AbstractArray`: the parameters of the input image
 """
 # skymodel / x must be replaced to Comrade's type
-evaluate(reg::AbstractRegularizer, skymodel::AbstractImageModel, x::AbstractArray) = evaluate(reg.domain, reg, skymodel, x)
+evaluate(reg::AbstractRegularizer, skymodel::IntensityMap, x::AbstractArray) = evaluate(reg.domain, reg, skymodel, x)
 
 
 """
@@ -94,6 +94,6 @@ on the given image model. In default, this should return `reg.hyperparameter .* 
 - `x::AbstractArray`: the parameters of the input image
 """
 # skymodel / x must be replaced to Comrade's type
-function cost(reg::AbstractRegularizer, imap::IntensityMap)
+@inline function cost(reg::AbstractRegularizer, skymodel::IntensityMap, x::AbstractArray)
     return reg.hyperparameter .* evaluate(reg, skymodel, x)
 end
