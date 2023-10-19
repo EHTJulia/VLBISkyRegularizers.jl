@@ -3,14 +3,15 @@ export KLEntropy
 """
     KLEntropy <: AbstractRegularizer
 
-Regularizer using the KL divergence.
+Regularizer using the Kullback-Leibler divergence (or a relative entropy)
 
 # fields
 - `hyperparameter::Number`: the hyperparameter of the regularizer
 - `prior`: the prior image
-- `domain::AbstractRegularizerDomain`: the image domain where the regularization funciton will be computed. L1Norm can be computed only in `LinearDomain()`.
+- `domain::AbstractRegularizerDomain`: the image domain where the regularization funciton will be computed.
+    KLEntropy can be computed only in `LinearDomain()`.
 """
-struct KLEntropy{S,T,D} <: AbstractRegularizer
+struct KLEntropy{S<:Number,T,D<:AbstractRegularizerDomain} <: AbstractRegularizer
     hyperparameter::S
     prior::T
     domain::D
@@ -28,9 +29,9 @@ Base function of the l1norm.
 - `I::IntensityMap`: the image
 - `p::IntensityMap`: the prior image
 """
-@inline function klentropy_base(I::IntensityMap, p::AbstractArray)
+@inline function klentropy_base(I::IntensityMap, p::IntensityMap)
     # compute the ttotal flux
-    totalflux = sum_floop(I)
+    totalflux = sum(I)
     # compute xlogx
     @inbounds xnorm = I ./ totalflux
     @inbounds xlogx = xnorm .* log.(xnorm ./ p)
@@ -38,9 +39,8 @@ Base function of the l1norm.
 end
 
 """
-    evaluate(::AbstractRegularizer, skymodel::AbstractImage2DModel, x::AbstractArray)
+    evaluate(::AbstractRegularizer, skymodel::IntensityMap, x::IntensityMap)
 """
-# skymodel::AbstractImage2DModel, x::AbstractArray needs to be changed! 
-function evaluate(::LinearDomain, reg::KLEntropy, skymodel::IntensityMap, x::AbstractArray)
+function evaluate(::LinearDomain, reg::KLEntropy, skymodel::IntensityMap, x::IntensityMap)
     return klentropy_base(transform_linear_forward(skymodel, x), reg.prior)
 end

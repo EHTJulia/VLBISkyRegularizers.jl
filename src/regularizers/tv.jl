@@ -10,7 +10,7 @@ Regularizer using the Isotropic Total Variation.
 - `weight`: the weight of the regularizer, which could be a number or an array.
 - `domain::AbstractRegularizerDomain`: the image domain where the regularization funciton will be computed. L1Norm can be computed only in `LinearDomain()`.
 """
-struct TV{S,T,D} <: AbstractRegularizer
+struct TV{S<:Number,T,D<:AbstractRegularizerDomain} <: AbstractRegularizer
     hyperparameter::S
     weight::T
     domain::D
@@ -20,7 +20,7 @@ end
 functionlabel(::TV) = :tv
 
 """
-    tv_base_pixel(I::AbstractArray, ix::Integer, iy::Integer)
+    tv_base_pixel(I::IntensityMap, ix::Integer, iy::Integer)
 
 Evaluate the isotropic variation term for the given pixel
 
@@ -78,8 +78,8 @@ end
 
 
 """
-    evaluate(::AbstractRegularizer, skymodel::AbstractImage2DModel, x::AbstractArray)
+    evaluate(::AbstractRegularizer, skymodel::IntensityMap, x::IntensityMap)
 """
-function evaluate(::LinearDomain, reg::TV, skymodel::IntensityMap, x::AbstractArray)
+function evaluate(::LinearDomain, reg::TV, skymodel::IntensityMap, x::IntensityMap)
     return tv_base(transform_linear_forward(skymodel, x), reg.weight)
 end
