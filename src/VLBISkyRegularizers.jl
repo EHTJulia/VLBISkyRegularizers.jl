@@ -8,6 +8,12 @@ using EHTImages
 using EHTUtils
 using FLoops
 using Wavelets
+using Enzyme
+using Zygote
+using ChainRulesCore
+import .EnzymeRules: reverse, augmented_primal
+using .EnzymeRules
+
 
 
 include("regularizers/abstract.jl")

@@ -51,6 +51,20 @@ function l1norm(I::IntensityMap, levels::Integer, wavelet::OrthoFilter)
     return sum(abs.(wvim))
 end
 
+
+
+function ChainRulesCore.rrule(::typeof(l1norm), I::IntensityMap, levels::Integer, wavelet::OrthoFilter)
+    y = sum(abs.(dwt(I, wavelet, levels)))
+    function pullback(Δy)
+        fbar = NoTangent()
+        Ibar = @thunk(idwt(I, wavelet, levels)*Δy)
+        lbar = NoTangent()
+        wbar = NoTangent()
+        return fbar, Ibar, lbar, wbar
+    end
+    return y, pullback
+end
+
 """
     l1norm(I::IntensityMap, w::Number, levels::Integer, wavelet::OrthoFilter)
 
