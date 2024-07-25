@@ -31,7 +31,7 @@ The log density of the regularizers evaluated at the input image. .
 """
 function Distributions._logpdf(d::Regularizers, x::AbstractMatrix{<:Real})
     rrs = d.regularizers
-    return sum(map(r -> -1*r.hyperparameter*evaluate(r, x), rrs))
+    return sum(map(r -> -1*evaluate(r, x), rrs))
 end
 
 """
