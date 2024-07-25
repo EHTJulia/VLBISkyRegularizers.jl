@@ -1,51 +1,54 @@
-export L1Norm
+export L1, evaluate
 
 """
-    L1Norm <: AbstractRegularizer
+    L1 <: AbstractRegularizer
 
-Regularizer using the l1-norm.
+Regularizer using the L1 norm.
 
 # fields
 - `hyperparameter::Number`: the hyperparameter of the regularizer
-- `weight`: the weight of the regularizer, which could be a number or an array.
-- `domain::AbstractRegularizerDomain`: the image domain where the regularization funciton will be computed. L1Norm can be computed only in `LinearDomain()`.
+- `domain::AbstractRegularizerDomain`: the image domain where the regularization funciton will be computed.
 """
-struct L1Norm{S<:Number,T,D<:AbstractRegularizerDomain} <: AbstractRegularizer
+struct L1{S<:Number,D<:AbstractRegularizerDomain} <: AbstractRegularizer
     hyperparameter::S
-    weight::T
     domain::D
 end
 
 # function label
-functionlabel(::L1Norm) = :l1norm
+functionlabel(::L1) = :l1
 
 """
-    l1norm(I::IntensityMap)
+    l1_base(x::AbstractArray)
 
-Base function of the l1norm.
+Base function of the L1 norm.
 
 # Arguments
-- `I::IntensityMap`: the image
+- `x::AbstractArray`: the image
 """
-@inline l1norm(I::IntensityMap) = @inbounds sum(abs.(I))
+@inline l1_base(x::AbstractArray) = @inbounds sum(abs.(I))
+
 
 """
-    l1norm(I::IntensityMap, w::Number)
+    l1_base(x::AbstractArray, w::Number)
 
-Base function of the l1norm.
+Base function of the L1 norm.
 
 # Arguments
-- `I::IntensityMap`: the image
-- `w::Number`: the regularization weight
+- `x::AbstractArray`: the image
+- 'w::Number' : the regularization weight
 """
-@inline l1norm(I::IntensityMap, w::Number) = w * l1norm(I)
+@inline l1_base(x::AbstractArray, w::Number) =  w * l1_base(x)
 
 
-@inline transform_linear_forward(skymodel::IntensityMap, x::IntensityMap) = x
+"""
+    evaluate(reg::L1, x::AbstractArray)
 
+Evaluate the L1 norm regularizer at an image.
+
+# Arguments
+- `reg::L1`: L1 norm regularizer
+- `x::AbstractArray`: the image
 """
-    evaluate(::AbstractRegularizer, skymodel::IntensityMap, x::IntensityMap)
-"""
-function evaluate(::LinearDomain, reg::L1Norm, skymodel::IntensityMap, x::IntensityMap)
-    return l1norm(transform_linear_forward(skymodel, x), reg.weight)
+function evaluate(reg::L1, x::AbstractArray)
+    return l1_base(transform_domain(reg.domain, x), reg.hyperparameter)
 end

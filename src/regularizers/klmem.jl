@@ -11,7 +11,7 @@ Regularizer using the Kullback-Leibler divergence (or a relative entropy)
 - `domain::AbstractRegularizerDomain`: the image domain where the regularization funciton will be computed.
     KLEntropy can be computed only in `LinearDomain()`.
 """
-struct KLEntropy{S<:Number,T,D<:AbstractRegularizerDomain} <: AbstractRegularizer
+struct KLEntropy{S<:Number,T,D<:RegularizerDomain} <: Regularizer
     hyperparameter::S
     prior::T
     domain::D
@@ -29,7 +29,7 @@ Base function of the KL-Entropy norm.
 - `I::IntensityMap`: the image
 - `p::IntensityMap`: the prior image
 """
-@inline function klentropy_base(I::IntensityMap, p::IntensityMap)
+@inline function klentropy_base(I::AbstractArray, p::AbstractArray)
     # compute the total flux
     totalflux = sum(I)
     # compute xlogx
@@ -85,6 +85,6 @@ end
 """
     evaluate(::AbstractRegularizer, skymodel::IntensityMap, x::IntensityMap)
 """
-function evaluate(::LinearDomain, reg::KLEntropy, skymodel::IntensityMap, x::IntensityMap)
+function evaluate(::LinearDomain, reg::KLEntropy, skymodel::AbstractArray, x::AbstractArray)
     return klentropy_base(transform_linear_forward(skymodel, x), reg.prior)
 end
