@@ -16,6 +16,7 @@ VLBISkyModels = "d6343c73-7174-4e0f-bb64-562643efbeca"
 Wavelets = "29a6e085-ba6d-5f35-a997-948ac2efa89a"
 
 [compat]
+Distributions = "0.25"
 HypercubeTransform = "0.4"
 julia = "1.10.4"
 
