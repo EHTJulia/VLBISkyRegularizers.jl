@@ -1,4 +1,4 @@
-export domain, evaluate, functionlabel, hyperparameter, LinearDomain, LogDomain, transform_domain
+export domain, evaluate, functionlabel, hyperparameter, LinearDomain, LogDomain, WaveletDomain, transform_domain
 
 """
     AbstractRegularizer
@@ -26,6 +26,25 @@ abstract type AbstractRegularizerDomain end
 # computing domain
 struct LinearDomain <: AbstractRegularizerDomain end
 struct LogDomain <: AbstractRegularizerDomain end
+struct WaveletDomain{wt<:OrthoFilter, l} <: AbstractRegularizerDomain
+    wavelet::wt
+    level::l
+
+    function WaveletDomain(wt::OrthoFilter, levels::Integer)
+        return new{typeof(wt), typeof(levels)}(wt, levels)
+    end
+
+    function WaveletDomain(wt::OrthoFilter, image::AbstractArray)
+        levels = floor(Int, log2(size(image)[1]))
+        return new{typeof(wt), typeof(levels)}(wt, levels)
+    end
+    
+    function WaveletDomain(wt::OrthoFilter)
+        levels = nothing
+        return new{typeof(wt), typeof(levels)}(wt, levels)
+    end
+end
+
 
 # function to get the label for regularizer
 functionlabel(::AbstractRegularizer) = :namelessregularizer
@@ -69,3 +88,6 @@ Transform the domain of the image. For Linear Domain, this does not change the i
 Transform the domain of the image. For Log Domain, return the log of the image.
 """
 @inline transform_domain(::LogDomain, x::AbstractArray) =  @inbounds log.(abs.(real(x)))
+
+@inline transform_domain(wd::WaveletDomain{}, x::AbstractArray) = isnothing(wd.level) ? dwt(x, wd.wavelet) : dwt(x, wd.wavelet, wd.level)
+    

@@ -25,7 +25,7 @@ Base function of the L1 norm.
 # Arguments
 - `x::AbstractArray`: the image
 """
-@inline l1_base(x::AbstractArray) = @inbounds sum(abs.(I))
+@inline l1_base(x::AbstractArray) = @inbounds sum(abs.(x))
 
 
 """
