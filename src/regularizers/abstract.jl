@@ -20,32 +20,6 @@ export domain, evaluate, functionlabel, hyperparameter, LinearDomain, LogDomain,
 """
 abstract type AbstractRegularizer <: ContinuousMatrixDistribution end
 
-# computing domain
-abstract type AbstractRegularizerDomain end
-
-# computing domain
-struct LinearDomain <: AbstractRegularizerDomain end
-struct LogDomain <: AbstractRegularizerDomain end
-struct WaveletDomain{wt<:OrthoFilter, l} <: AbstractRegularizerDomain
-    wavelet::wt
-    level::l
-
-    function WaveletDomain(wt::OrthoFilter, levels::Integer)
-        return new{typeof(wt), typeof(levels)}(wt, levels)
-    end
-
-    function WaveletDomain(wt::OrthoFilter, image::AbstractArray)
-        levels = floor(Int, log2(size(image)[1]))
-        return new{typeof(wt), typeof(levels)}(wt, levels)
-    end
-    
-    function WaveletDomain(wt::OrthoFilter)
-        levels = nothing
-        return new{typeof(wt), typeof(levels)}(wt, levels)
-    end
-end
-
-
 # function to get the label for regularizer
 functionlabel(::AbstractRegularizer) = :namelessregularizer
 
@@ -56,14 +30,15 @@ functionlabel(::AbstractRegularizer) = :namelessregularizer
 
 Return the computing domain of the given regularizer.
 """
-domain(reg::AbstractRegularizer) = reg.domain
+#image_domain(reg::AbstractRegularizer) = reg.image_domain
+#evaluation_domain(reg::AbstractRegularizer) = reg.evaluation_domain
 
 """
     hyperparameter(reg::AbstractRegularizer) = reg.hyperparameter
 
 Return the hyperparameter of the given regularizer.
 """
-hyperparameter(reg::AbstractRegularizer) = reg.hyperparameter
+#hyperparameter(reg::AbstractRegularizer) = reg.hyperparameter
 
 
 """
@@ -74,20 +49,3 @@ By default, return 0.
 """
 evaluate(reg::AbstractRegularizer, image::AbstractArray) = 0
 
-
-"""
-    transform_domain(::LinearDomain, x::AbstractArray)
-
-Transform the domain of the image. For Linear Domain, this does not change the image.
-"""
-@inline transform_domain(::LinearDomain, x::AbstractArray) = x
-
-"""
-    transform_domain(::LogDomain, x::AbstractArray)
-
-Transform the domain of the image. For Log Domain, return the log of the image.
-"""
-@inline transform_domain(::LogDomain, x::AbstractArray) =  @inbounds log.(abs.(real(x)))
-
-@inline transform_domain(wd::WaveletDomain{}, x::AbstractArray) = isnothing(wd.level) ? dwt(x, wd.wavelet) : dwt(x, wd.wavelet, wd.level)
-    

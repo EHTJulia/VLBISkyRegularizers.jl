@@ -9,9 +9,10 @@ Regularizer using the L1 norm.
 - `hyperparameter::Number`: the hyperparameter of the regularizer
 - `domain::AbstractRegularizerDomain`: the image domain where the regularization funciton will be computed.
 """
-struct L1{S<:Number,D<:AbstractRegularizerDomain} <: AbstractRegularizer
-    hyperparameter::S
-    domain::D
+struct L1{H<:Number,ID<:AbstractDomain,ED<:AbstractDomain} <: AbstractRegularizer
+    hyperparameter::H
+    image_domain::ID
+    evaluation_domain::ED
 end
 
 # function label
@@ -50,5 +51,5 @@ Evaluate the L1 norm regularizer at an image.
 - `x::AbstractArray`: the image
 """
 function evaluate(reg::L1, x::AbstractArray)
-    return l1_base(transform_domain(reg.domain, x), reg.hyperparameter)
+    return l1_base(transform_domain(reg.image_domain, reg.evaluation_domain, x), reg.hyperparameter)
 end

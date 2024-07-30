@@ -9,7 +9,7 @@ Regularizer using the Isotropic Total Variation.
 - `hyperparameter::Number`: the hyperparameter of the regularizer
 - `domain::AbstractRegularizerDomain`: the image domain where the regularization funciton will be computed.
 """
-struct TV{S<:Number,D<:AbstractRegularizerDomain} <: AbstractRegularizer
+struct TV{S<:Number,D<:AbstractDomain} <: AbstractRegularizer
     hyperparameter::S
     domain::D
 end
@@ -50,5 +50,5 @@ Evaluate the TV regularizer at an image.
 - `x::AbstractArray`: the image
 """
 function evaluate(reg::TV, x::AbstractArray)
-    return tv_base(transform_domain(reg.domain, x), reg.hyperparameter)
+    return tv_base(transform_domain(reg.image_domain, reg.evaluation_domain, x), reg.hyperparameter)
 end

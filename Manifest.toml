@@ -2,7 +2,7 @@
 
 julia_version = "1.10.4"
 manifest_format = "2.0"
-project_hash = "f7c8438bfd5ff2fc70fcac15d26f16cfdd038897"
+project_hash = "6e7b6ca42af978b577a4efa2d0407a69b5343ad5"
 
 [[deps.AbstractFFTs]]
 deps = ["LinearAlgebra"]
@@ -133,6 +133,11 @@ deps = ["LinearAlgebra", "Memoize", "Random"]
 git-tree-sha1 = "3f7be532673fc4a22825e7884e9e0e876236b12a"
 uuid = "26cce99e-4866-4b6d-ab74-862489e035e0"
 version = "0.7.1"
+
+[[deps.Bessels]]
+git-tree-sha1 = "4435559dc39793d53a9e3d278e185e920b4619ef"
+uuid = "0e736298-9ec6-45e8-9647-e4fc86a2fe38"
+version = "0.2.8"
 
 [[deps.CEnum]]
 git-tree-sha1 = "389ad5c84de1ae7cf0e28e381131c98ea87d54fc"
@@ -278,6 +283,12 @@ git-tree-sha1 = "9e2f36d3c96a820c678f2f1f1782582fcf685bae"
 uuid = "8bb1440f-4735-579b-a4ab-409b98df4dab"
 version = "1.9.1"
 
+[[deps.DensityInterface]]
+deps = ["InverseFunctions", "Test"]
+git-tree-sha1 = "80c3e8639e3353e5d2912fb3a1916b8455e2494b"
+uuid = "b429d917-457f-4dbc-8f4c-0cc954292b1d"
+version = "0.4.0"
+
 [[deps.DiffResults]]
 deps = ["StaticArraysCore"]
 git-tree-sha1 = "782dd5f4561f5d267313f23853baaaa4c52ea621"
@@ -313,16 +324,12 @@ deps = ["AliasTables", "FillArrays", "LinearAlgebra", "PDMats", "Printf", "QuadG
 git-tree-sha1 = "9c405847cc7ecda2dc921ccf18b47ca150d7317e"
 uuid = "31c24e10-a181-5473-b8eb-7969acd0382f"
 version = "0.25.109"
+weakdeps = ["ChainRulesCore", "DensityInterface", "Test"]
 
     [deps.Distributions.extensions]
     DistributionsChainRulesCoreExt = "ChainRulesCore"
     DistributionsDensityInterfaceExt = "DensityInterface"
     DistributionsTestExt = "Test"
-
-    [deps.Distributions.weakdeps]
-    ChainRulesCore = "d360d2e6-b24c-11e9-a2a3-2a2ae2dbcce4"
-    DensityInterface = "b429d917-457f-4dbc-8f4c-0cc954292b1d"
-    Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 
 [[deps.DocStringExtensions]]
 deps = ["LibGit2"]
@@ -1119,6 +1126,12 @@ deps = ["Unitful", "UnitfulAngles"]
 git-tree-sha1 = "da7577e6a726959b14f7451674d00b78d10ca30f"
 uuid = "6112ee07-acf9-5e0f-b108-d242c714bf9f"
 version = "1.2.1"
+
+[[deps.VLBIImagePriors]]
+deps = ["ArgCheck", "Bessels", "ChainRulesCore", "ComradeBase", "DensityInterface", "Distributions", "DocStringExtensions", "Enzyme", "EnzymeCore", "FFTW", "FillArrays", "HypercubeTransform", "LinearAlgebra", "NamedTupleTools", "Random", "Reexport", "Serialization", "SparseArrays", "SpecialFunctions", "StatsBase", "StatsFuns", "SuiteSparse", "TransformVariables"]
+git-tree-sha1 = "f20b444cfd0828f53b8f18a5b5ba056e0756b9b9"
+uuid = "b1ba175b-8447-452c-b961-7db2d6f7a029"
+version = "0.8.2"
 
 [[deps.VLBISkyModels]]
 deps = ["AbstractFFTs", "Accessors", "ArgCheck", "BasicInterpolators", "ChainRulesCore", "ComradeBase", "DelimitedFiles", "DimensionalData", "DocStringExtensions", "Enzyme", "EnzymeCore", "FFTW", "FITSIO", "FillArrays", "ForwardDiff", "LinearAlgebra", "NFFT", "NamedTupleTools", "PaddedViews", "PolarizedTypes", "Printf", "RecipesBase", "Reexport", "Requires", "Serialization", "SpecialFunctions", "StaticArrays", "StructArrays"]

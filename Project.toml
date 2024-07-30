@@ -12,13 +12,14 @@ HypercubeTransform = "9ec9aee3-0fd3-44c2-8e61-a50acc66f3c8"
 Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
 TransformVariables = "84d833dd-6860-57f9-a1a7-6da5db126cff"
 Tullio = "bc48ee85-29a4-5162-ae0b-a64e1601d4bc"
+VLBIImagePriors = "b1ba175b-8447-452c-b961-7db2d6f7a029"
 VLBISkyModels = "d6343c73-7174-4e0f-bb64-562643efbeca"
 Wavelets = "29a6e085-ba6d-5f35-a997-948ac2efa89a"
 
 [compat]
-TransformVariables = "0.8"
 Distributions = "0.25"
 HypercubeTransform = "0.4"
+TransformVariables = "0.8"
 julia = "1.10.4"
 
 [extras]

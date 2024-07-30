@@ -9,7 +9,7 @@ Regularizer using the Isotropic Total Squared Variation.
 - `hyperparameter::Number`: the hyperparameter of the regularizer
 - `domain::AbstractRegularizerDomain`: the image domain where the regularization funciton will be computed.
 """
-struct TSV{S<:Number,D<:AbstractRegularizerDomain} <: AbstractRegularizer
+struct TSV{S<:Number,D<:AbstractDomain} <: AbstractRegularizer
     hyperparameter::S
     domain::D
 end
@@ -50,5 +50,5 @@ Evaluate the TSV regularizer at an image.
 - `x::AbstractArray`: the image
 """
 function evaluate(reg::TSV, x::AbstractArray)
-    return tsv_base(transform_domain(reg.domain, x), reg.hyperparameter)
+    return tsv_base(transform_domain(reg.image_domain, reg.evaluation_domain, x), reg.hyperparameter)
 end
