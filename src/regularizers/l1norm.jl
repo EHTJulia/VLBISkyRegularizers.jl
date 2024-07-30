@@ -9,10 +9,11 @@ Regularizer using the L1 norm.
 - `hyperparameter::Number`: the hyperparameter of the regularizer
 - `domain::AbstractRegularizerDomain`: the image domain where the regularization funciton will be computed.
 """
-struct L1{H<:Number,ID<:AbstractDomain,ED<:AbstractDomain} <: AbstractRegularizer
+struct L1{H<:Number,ID<:AbstractDomain,ED<:AbstractDomain,G<:RectiGrid} <: AbstractRegularizer
     hyperparameter::H
     image_domain::ID
     evaluation_domain::ED
+    grid::G
 end
 
 # function label

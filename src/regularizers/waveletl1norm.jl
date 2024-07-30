@@ -11,25 +11,29 @@ Regularizer using the l1-norm with a wavelet transform
 - `levels`: number of levels to transform (can also give image, in which case the number of levels is calculated from the image size)
 - `wavelet`: wavelet type
 """
-struct WaveletL1Norm{S<:Number,T,D<:RegularizerDomain,L<:Integer,W<:OrthoFilter} <: Regularizer
-    hyperparameter::S
-    weight::T
-    domain::D
+struct WaveletL1Norm{H<:Number,ID<:RegularizerDomain,ED<:RegularizerDomain,G<:Rectigrid,L<:Integer,W<:OrthoFilter} <: Regularizer
+    hyperparameter::H
+    image_domain::ID
+    evaluation_domain::ED
+    grid::G
     levels::L
     wavelet::W
 
-    function WaveletL1Norm(hyperparameter::Number, weight, domain::RegularizerDomain, image::AbstractArray, wavelet::OrthoFilter)
+    function WaveletL1Norm(hyperparameter::Number, image_domain::RegularizerDomain, evaluation_domain::RegularizerDomain,
+        grid::RectiGrid, image::AbstractArray, wavelet::OrthoFilter)
         levels = floor(Int, log2(size(image)[1])-1)
-        return new{typeof(hyperparameter), typeof(weight), typeof(domain), typeof(levels),typeof(wavelet)}(
-            hyperparameter, weight, domain, levels, wavelet
+        return new{typeof(hyperparameter), typeof(image_domain), typeof(evaluation_domain), typeof(grid), typeof(levels),typeof(wavelet)}(
+            hyperparameter, image_domain, evaluation_domain, grid, levels, wavelet
             )
     end
 
-    function WaveletL1Norm(hyperparameter::Number, weight, domain::RegularizerDomain, levels::Integer, wavelet::OrthoFilter)
-        return new{typeof(hyperparameter), typeof(weight), typeof(domain), typeof(levels),typeof(wavelet)}(
-            hyperparameter, weight, domain, levels, wavelet
+    function WaveletL1Norm(hyperparameter::Number, image_domain::RegularizerDomain, evaluation_domain::RegularizerDomain,
+        grid::RectiGrid, levels::Integer, wavelet::OrthoFilter)
+        return new{typeof(hyperparameter), typeof(image_domain), typeof(evaluation_domain), typeof(grid), typeof(levels),typeof(wavelet)}(
+            hyperparameter, image_domain, evaluation_domain, grid, levels, wavelet
             )
     end
+
 
 end
 
@@ -83,5 +87,5 @@ Base function of the wavelet-l1norm.
     evaluate(::AbstractRegularizer, skymodel::IntensityMap, x::IntensityMap)
 """
 function evaluate(::LinearDomain, reg::WaveletL1Norm, skymodel::AbstractArray, x::AbstractArray)
-    return l1norm(transform_linear_forward(skymodel, x), reg.weight, reg.levels, reg.wavelet)
+    return l1norm(transform_domain(skymodel, x), reg.weight, reg.levels, reg.wavelet)
 end

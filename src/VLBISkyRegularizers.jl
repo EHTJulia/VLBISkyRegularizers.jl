@@ -3,7 +3,7 @@ module VLBISkyRegularizers
 # import modules
 using DocStringExtensions
 #using VLBISkyModels
-#using ComradeBase
+using ComradeBase
 using Distributions
 using HypercubeTransform
 using Random
