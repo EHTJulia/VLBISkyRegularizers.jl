@@ -13,9 +13,9 @@ using Enzyme
         d = WaveletL1(rand(), imageDomain, LinearDomain(), WVType(), grid)
         comb = a + 2*(b+c) + 3*d
         x = rand(comb)
-        @test evaluate(comb, x) == evaluate(a) + 2*evaluate(b) + 2*evaluate(c) + 3*evaluate(d)
+        @test evaluate(comb, x) == evaluate(a, x) + 2*evaluate(b, x) + 2*evaluate(c, x) + 3*evaluate(d, x)
 
-        dx = zeros(shape(x))
+        dx = zeros(size(x))
         autodiff(Enzyme.Reverse, evaluate, Active, Const(comb), Duplicated(x, dx))
         finite_dx = grad(central_fdm(5,1), x->evaluate(comb,x), x)[1]
         @test dx ≈ finite_dx
