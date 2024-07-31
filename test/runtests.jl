@@ -2,5 +2,5 @@ using VLBISkyRegularizers
 using Test
 
 @testset "VLBISkyRegularizers.jl" begin
-    # Write your tests here.
+    include(joinpath(@__DIR__, "gradients.jl"))
 end
