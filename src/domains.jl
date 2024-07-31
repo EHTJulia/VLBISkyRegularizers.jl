@@ -26,30 +26,7 @@ struct LogDomain <: AbstractDomain end
 struct ParameterDomain <: AbstractDomain end
 struct CLRDomain <: AbstractDomain end
 struct ALRDomain <: AbstractDomain end
-struct WaveletDomain{wt<:OrthoFilter, l} <: AbstractDomain
-    wavelet::wt
-    level::l
 
-    function WaveletDomain(wt::OrthoFilter, levels::Integer)
-        return new{typeof(wt), typeof(levels)}(wt, levels)
-    end
-
-    function WaveletDomain(wt::OrthoFilter, image::AbstractArray)
-        levels = floor(Int, log2(size(image)[1]))
-        return new{typeof(wt), typeof(levels)}(wt, levels)
-    end
-    
-    function WaveletDomain(wt::OrthoFilter)
-        levels = nothing
-        return new{typeof(wt), typeof(levels)}(wt, levels)
-    end
-
-    function WaveletDomain()
-        levels = nothing
-        wt = wavelet(WT.db2)
-        return new{typeof(wt), typeof(levels)}
-    end
-end
 
 @inline transform_linear(::LinearDomain, x::AbstractArray) = x
 @inline transform_linear(::LogDomain, x::AbstractArray) = exp.(x)
@@ -62,8 +39,10 @@ end
 Transform the domain of the image. For Linear Domain, this does not change the image.
 """
 @inline transform_domain(::AbstractDomain, ::ParameterDomain, x::AbstractArray) = x
-@inline transform_domain(::D, ::D, x::AbstractArray) where {D <: AbstractDomain} = x
+@inline transform_domain(::LogDomain, ::LogDomain, x::AbstractArray) = x
+@inline transform_domain(::LinearDomain, ::LinearDomain, x::AbstractArray) = x
+
 
 @inline transform_domain(id::AbstractDomain, ::LogDomain, x::AbstractArray) = @inbounds log.(abs.(real(transform_linear(id, x))))
 @inline transform_domain(id::AbstractDomain, ::LinearDomain, x::AbstractArray) = transform_linear(id, x)
-@inline transform_domain(id::AbstractDomain, wd::WaveletDomain, x::AbstractArray) = isnothing(wd.level) ? dwt(transform_linear(id, x), wd.wavelet) : dwt(transform_linear(id, x), wd.wavelet, wd.level)
+#@inline transform_domain(id::AbstractDomain, wd::WaveletDomain, x::AbstractArray) = isnothing(wd.level) ? dwt(transform_linear(id, x), wd.wavelet) : dwt(transform_linear(id, x), wd.wavelet, wd.level)

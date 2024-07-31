@@ -13,7 +13,7 @@ struct AddRegularizer{R1<:AbstractRegularizer, R2<:AbstractRegularizer, ID<:Abst
         if r1.grid != r2.grid
             error("Regularizer grids must be the same")
         end
-        return new{typeof(r1), typeof(r2), typeof(r1.image_domain)}(r1, r2, r1.image_domain, r1.grid)
+        return new{typeof(r1), typeof(r2), typeof(r1.image_domain), typeof(r1.grid)}(r1, r2, r1.image_domain, r1.grid)
     end
 end
 

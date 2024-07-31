@@ -41,6 +41,8 @@ Base function of the L1 norm.
 """
 @inline l1_base(x::AbstractArray, w::Number) =  w * l1_base(x)
 
+#@inline l1_base_wavelet(x::AbstractArray, w::Number) =  w * l1_base(x)
+
 
 """
     evaluate(reg::L1, x::AbstractArray)
@@ -54,3 +56,9 @@ Evaluate the L1 norm regularizer at an image.
 function evaluate(reg::L1, x::AbstractArray)
     return l1_base(transform_domain(reg.image_domain, reg.evaluation_domain, x), reg.hyperparameter)
 end
+
+#=
+function evaluate(reg::L1{Number, AbstractDomain, WaveletDomain, RectiGrid}, x::AbstractArray)
+    return l1_base_wavelet(transform_domain(reg.image_domain, reg.evaluation_domain, x), reg.hyperparameter)
+end
+=#

@@ -14,11 +14,11 @@ using VLBIImagePriors
 #using EHTUtils
 #using FLoops
 using Wavelets
-#using Enzyme
+using Enzyme
 #using Zygote
 #using ChainRulesCore
-#import .EnzymeRules: reverse, augmented_primal
-#using .EnzymeRules
+import .EnzymeRules: reverse, augmented_primal
+using .EnzymeRules
 
 
 
@@ -28,10 +28,10 @@ include("domains.jl")
 include("regularizers/l1norm.jl")
 include("regularizers/tv.jl")
 include("regularizers/tsv.jl")
-include("regularizers/regularizers.jl")
+#include("regularizers/regularizers.jl")
 include("regularizers/composite.jl")
 #include("regularizers/klmem.jl")
 include("common.jl")
-#include("regularizers/waveletl1norm.jl")
+include("regularizers/waveletl1norm.jl")
 
 end
