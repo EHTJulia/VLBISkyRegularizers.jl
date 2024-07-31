@@ -27,7 +27,8 @@ Base function of the L1 norm.
 # Arguments
 - `x::AbstractArray`: the image
 """
-@inline l1_base(x::AbstractArray) = @inbounds sum(abs.(x))
+#@inline l1_base(x::AbstractArray) = @inbounds sum(abs.(x))
+l1_base(x::AbstractArray) = sum(abs.(x))
 
 
 """
@@ -39,7 +40,7 @@ Base function of the L1 norm.
 - `x::AbstractArray`: the image
 - 'w::Number' : the regularization weight
 """
-@inline l1_base(x::AbstractArray, w::Number) =  w * l1_base(x)
+l1_base(x::AbstractArray, w::Number) =  w * l1_base(x)
 
 #@inline l1_base_wavelet(x::AbstractArray, w::Number) =  w * l1_base(x)
 

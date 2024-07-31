@@ -39,7 +39,7 @@ Base function of the isotropic total squared variation.
 - `x::AbstractArray`: the image
 - 'w::Number' : the regularization weight
 """
-@inline tsv_base(x::AbstractArray, w::Number) =  w * tsv_base(x)
+tsv_base(x::AbstractArray, w::Number) =  w * tsv_base(x)
 
 
 """

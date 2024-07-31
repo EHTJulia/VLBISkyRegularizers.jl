@@ -28,8 +28,8 @@ struct WeightRegularizer{R<:AbstractRegularizer, W<:Number, ID<:AbstractDomain, 
     end
 end
 
-@inline added(r1::AbstractRegularizer, r2::AbstractRegularizer) = AddRegularizer(r1, r2)
-@inline weighted(r::AbstractRegularizer, w::Number) = WeightRegularizer(r, w)
+added(r1::AbstractRegularizer, r2::AbstractRegularizer) = AddRegularizer(r1, r2)
+weighted(r::AbstractRegularizer, w::Number) = WeightRegularizer(r, w)
 
 Base.:+(r1::AbstractRegularizer, r2::AbstractRegularizer) = added(r1, r2)
 Base.:*(r::AbstractRegularizer, w::Number) = weighted(r, w)

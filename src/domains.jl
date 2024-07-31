@@ -28,21 +28,23 @@ struct CLRDomain <: AbstractDomain end
 struct ALRDomain <: AbstractDomain end
 
 
-@inline transform_linear(::LinearDomain, x::AbstractArray) = x
-@inline transform_linear(::LogDomain, x::AbstractArray) = exp.(x)
-@inline transform_linear(::CLRDomain, x::AbstractArray) = to_simplex(CenteredLR(), x)
-@inline transform_linear(::ALRDomain, x::AbstractArray) = to_simplex(AdditiveLR(), x)
+transform_linear(::LinearDomain, x::AbstractArray) = x
+transform_linear(::LogDomain, x::AbstractArray) = exp.(x)
+transform_linear(::CLRDomain, x::AbstractArray) = to_simplex(CenteredLR(), x)
+transform_linear(::ALRDomain, x::AbstractArray) = to_simplex(AdditiveLR(), x)
 
 """
     transform_domain(::LinearDomain, x::AbstractArray)
 
 Transform the domain of the image. For Linear Domain, this does not change the image.
 """
-@inline transform_domain(::AbstractDomain, ::ParameterDomain, x::AbstractArray) = x
-@inline transform_domain(::LogDomain, ::LogDomain, x::AbstractArray) = x
-@inline transform_domain(::LinearDomain, ::LinearDomain, x::AbstractArray) = x
+transform_domain(::AbstractDomain, ::ParameterDomain, x::AbstractArray) = x
+transform_domain(::LogDomain, ::LogDomain, x::AbstractArray) = x
+transform_domain(::LinearDomain, ::LinearDomain, x::AbstractArray) = x
 
 
-@inline transform_domain(id::AbstractDomain, ::LogDomain, x::AbstractArray) = @inbounds log.(abs.(real(transform_linear(id, x))))
-@inline transform_domain(id::AbstractDomain, ::LinearDomain, x::AbstractArray) = transform_linear(id, x)
+#@inline transform_domain(id::AbstractDomain, ::LogDomain, x::AbstractArray) = @inbounds log.(abs.(real(transform_linear(id, x))))
+transform_domain(id::AbstractDomain, ::LogDomain, x::AbstractArray) = log.(abs.(real(transform_linear(id, x))))
+
+transform_domain(id::AbstractDomain, ::LinearDomain, x::AbstractArray) = transform_linear(id, x)
 #@inline transform_domain(id::AbstractDomain, wd::WaveletDomain, x::AbstractArray) = isnothing(wd.level) ? dwt(transform_linear(id, x), wd.wavelet) : dwt(transform_linear(id, x), wd.wavelet, wd.level)

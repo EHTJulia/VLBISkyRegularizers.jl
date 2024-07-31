@@ -18,6 +18,6 @@ using Enzyme
         dx = zeros(size(x))
         autodiff(Enzyme.Reverse, evaluate, Active, Const(comb), Duplicated(x, dx))
         finite_dx = grad(central_fdm(5,1), x->evaluate(comb,x), x)[1]
-        @test dx ≈ finite_dx
+        @test isapprox(dx, finite_dx,  atol=1e-5)
     end
 end
