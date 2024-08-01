@@ -1,15 +1,10 @@
 export WaveletL1, evaluate, WVType
+
 """
-    Wavelet L1Norm <: AbstractRegularizer
+    WVType
 
-Regularizer using the l1-norm with a wavelet transform
-
-# fields
-- `hyperparameter::Number`: the hyperparameter of the regularizer
-- `weight`: the weight of the regularizer, which could be a number or an array.
-- `domain::AbstractRegularizerDomain`: the image domain where the regularization funciton will be computed.
-- `levels`: number of levels to transform (can also give image, in which case the number of levels is calculated from the image size)
-- `wavelet`: wavelet type
+Wavelet type used for Wavelet Transform L1 Regularizer.
+By default, this is the full Daubechies 2 wavelet.
 """
 
 struct WVType{wt<:OrthoFilter, l}
@@ -37,6 +32,18 @@ struct WVType{wt<:OrthoFilter, l}
     end
 end
 
+"""
+    WaveletL1 <: AbstractRegularizer
+
+Regularizer using the l1-norm with a wavelet transform
+
+# fields
+- `hyperparameter::Number`: the hyperparameter of the regularization function.
+- `image_domain::AbstractDomain`: the domain of the image space 
+- `evaluation_domain::AbstractDomain`: the domain on which the regularizer is to be evaluated
+- `wavelet::WVType`: wavelet type
+- `grid`: grid on which image is defined
+"""
 struct WaveletL1{H<:Number,ID<:AbstractDomain,ED<:AbstractDomain,WT<:WVType, G<:RectiGrid} <: AbstractRegularizer
     hyperparameter::H
     image_domain::ID
@@ -46,64 +53,62 @@ struct WaveletL1{H<:Number,ID<:AbstractDomain,ED<:AbstractDomain,WT<:WVType, G<:
 end
 
 # function label
-functionlabel(::WaveletL1) = :waveletL1
+functionlabel(::WaveletL1) = "Wavelet L1"
 
 """
-    l1_base(x::AbstractArray)
+    wavelet_l1_base(x::AbstractArray, wv::WaveletL1)
 
-Base function of the L1 norm.
+Base function of the Wavelet L1 norm.
 
 # Arguments
 - `x::AbstractArray`: the image
+- `wv::WVType` : the wavelet transform type
 """
-@inline wavelet_transform(x::AbstractArray, wv::WaveletL1) = isnothing(wv.w_type.level) ? dwt(x, wv.w_type.wavelet) : dwt(x, wv.w_type.wavelet, wv.w_type.level)
-@inline inv_wavelet_transform(x::AbstractArray, wv::WaveletL1) = isnothing(wv.w_type.level) ? idwt(x, wv.w_type.wavelet) : idwt(x, wv.w_type.wavelet, wv.w_type.level)
+@inline wavelet_transform(x::AbstractArray, wv::WVType) = isnothing(wv.level) ? dwt(x, wv.wavelet) : dwt(x, wv.wavelet, wv.level)
+@inline inv_wavelet_transform(x::AbstractArray, wv::WVType) = isnothing(wv.level) ? idwt(x, wv.wavelet) : idwt(x, wv.wavelet, wv.level)
 
-@inline wavelet_l1_base(x::AbstractArray, wv::WaveletL1) = @inbounds sum(abs.(wavelet_transform(x, wv)))
+@inline wavelet_l1_base(x::AbstractArray, wv::WVType) = @inbounds sum(abs.(wavelet_transform(x, wv)))
 
 
 """
-    l1_base(x::AbstractArray, w::Number)
+    l1_base_wavelet(x::AbstractArray, wv::WaveletL1, w::Number)
 
-Base function of the L1 norm.
+Base function of the Wavelet L1 norm.
 
 # Arguments
 - `x::AbstractArray`: the image
-- 'w::Number' : the regularization weight
+- `wv::WVType` : the wavelet transform type
+- `w::Number` : weight of the regularizer
 """
 
-@inline l1_base_wavelet(x::AbstractArray, wv::WaveletL1, w::Number) =  w * wavelet_l1_base(x, wv)
+@inline l1_base_wavelet(x::AbstractArray, wv::WVType, w::Number) =  w * wavelet_l1_base(x, wv)
 
 
 """
-    evaluate(reg::L1, x::AbstractArray)
+    evaluate(reg::WaveletL1, x::AbstractArray)
 
-Evaluate the L1 norm regularizer at an image.
+Evaluate the Wavelet L1 norm regularizer at an image.
 
 # Arguments
-- `reg::L1`: L1 norm regularizer
+- `reg::WaveletL1`: WaveletL1 norm regularizer
 - `x::AbstractArray`: the image
 """
 
 function evaluate(reg::WaveletL1, x::AbstractArray)
-    return l1_base_wavelet(transform_domain(reg.image_domain, reg.evaluation_domain, x), reg, reg.hyperparameter)
+    return l1_base_wavelet(transform_domain(reg.image_domain, reg.evaluation_domain, x), reg.w_type, reg.hyperparameter)
 end
 
 
-
-function EnzymeRules.augmented_primal(config::ConfigWidth{1}, func::Const{typeof(wavelet_l1_base)}, ::Type{<:Active}, x::Duplicated, wv::Const)
-    println("In custom augmented primal rule 2.")
+# Custom rules for wavelet transform
+# For some reason, Enzyme sometimes want wv as a Const, sometimes as a MixedDuplicated, so implement both
+function EnzymeRules.augmented_primal(config::ConfigWidth{1}, func::Const{typeof(wavelet_l1_base)}, ::Type{<:Active}, x::Duplicated, wv::MixedDuplicated)
     # Compute primal
-
     primal = func.val(x.val, wv.val)
-    println("hello")
     # Return an AugmentedReturn object with shadow = nothing
-    return AugmentedReturn(nothing, nothing, x.val)
+    return AugmentedReturn(primal, nothing, x.val)
 end
 
-function EnzymeRules.reverse(config::ConfigWidth{1}, func::Const{typeof(wavelet_l1_base)}, dret::Active, tape, x::Duplicated, wv::Const)
-    println("In custom reverse rule.")
-    # accumulate dret into x's shadow. don't assign!
+function EnzymeRules.reverse(config::ConfigWidth{1}, func::Const{typeof(wavelet_l1_base)}, dret::Active, tape, x::Duplicated, wv::MixedDuplicated)
     ddx = zeros(size(x.val))
     p = wavelet_transform(x.val, wv.val)
     autodiff(Enzyme.Reverse, l1_base, Active, Duplicated(p, ddx))
@@ -111,37 +116,17 @@ function EnzymeRules.reverse(config::ConfigWidth{1}, func::Const{typeof(wavelet_
     return (nothing, nothing)
 end
 
-
-
-"""dwt(transform_linear(id, x), wd.wavelet)
-function ChainRulesCore.rrule(::typeof(dwt), x::AbstractArray, wavelet::OrthoFilter)
-    y = dwt(x, wavelet)
-    function pullback(Δy)
-        fbar = NoTangent()
-        xbar = @thunk(idwt(x, wavelet)*Δy)
-        wbar = NoTangent()
-        return fbar, xbar, wbar
-    end
-    return y, pullback
+function EnzymeRules.augmented_primal(config::ConfigWidth{1}, func::Const{typeof(wavelet_l1_base)}, ::Type{<:Active}, x::Duplicated, wv::Const)
+    # Compute primal (not needed here?)
+    primal = func.val(x.val, wv.val)
+    # Return an AugmentedReturn object with shadow = nothing
+    return AugmentedReturn(nothing, nothing, x.val)
 end
-"""
 
-"""
-    l1norm(I::IntensityMap, w::Number, levels::Integer, wavelet::OrthoFilter)
-
-Base function of the wavelet-l1norm.
-
-# Arguments
-- `I::IntensityMap`: the image
-- `w::Number`: the regularization weight
-- `levels::Integer`: number of levels for wavelet transform
-- `wavelet::OrthoFilter`: wavelet type
-"""
-#@inline l1norm(I::AbstractArray, w::Number, levels::Integer, wavelet::OrthoFilter) = w * l1norm(I,levels,wavelet)
-
-"""
-    evaluate(::AbstractRegularizer, skymodel::IntensityMap, x::IntensityMap)
-"""
-#function evaluate(::LinearDomain, reg::WaveletL1Norm, skymodel::AbstractArray, x::AbstractArray)
-#    return l1norm(transform_domain(skymodel, x), reg.weight, reg.levels, reg.wavelet)
-#end
+function EnzymeRules.reverse(config::ConfigWidth{1}, func::Const{typeof(wavelet_l1_base)}, dret::Active, tape, x::Duplicated, wv::Const)
+    ddx = zeros(size(x.val))
+    p = wavelet_transform(x.val, wv.val)
+    autodiff(Enzyme.Reverse, l1_base, Active, Duplicated(p, ddx))
+    x.dval .+=  inv_wavelet_transform(ddx, wv.val) .* dret.val
+    return (nothing, nothing)
+end

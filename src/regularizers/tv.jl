@@ -6,8 +6,10 @@ export TV, evaluate
 Regularizer using the Isotropic Total Variation.
 
 # fields
-- `hyperparameter::Number`: the hyperparameter of the regularizer
-- `domain::AbstractRegularizerDomain`: the image domain where the regularization funciton will be computed.
+- `hyperparameter::Number`: the hyperparameter of the regularization function.
+- `image_domain::AbstractDomain`: the domain of the image space 
+- `evaluation_domain::AbstractDomain`: the domain on which the regularizer is to be evaluated
+- `grid`: grid on which image is defined
 """
 struct TV{H<:Number,ID<:AbstractDomain,ED<:AbstractDomain,G<:RectiGrid} <: AbstractRegularizer
     hyperparameter::H
@@ -17,7 +19,7 @@ struct TV{H<:Number,ID<:AbstractDomain,ED<:AbstractDomain,G<:RectiGrid} <: Abstr
 end
 
 # function label
-functionlabel(::TV) = :tv
+functionlabel(::TV) = "TV"
 
 """
     tv_base(x::AbstractArray)

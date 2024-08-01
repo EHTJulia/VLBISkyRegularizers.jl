@@ -1,25 +1,16 @@
-export domain, evaluate, functionlabel, hyperparameter, LinearDomain, LogDomain, WaveletDomain, transform_domain
+export AbstractRegularizer, image_domain, evaluation_domain, evaluate, functionlabel, grid
 
 """
     AbstractRegularizer
 
+Used to define the regularizer functions. See `subtypes(AbstractRegularizer)` for a list of implemented regularizers.
+
 # Mandatory fields
 
-- `hyperparameter::Number`: the hyper parameter of the regularization function. In default, it should be a number.
+- `hyperparameter::Number`: the hyperparameter of the regularization function.
 - `image_domain::AbstractDomain`: the domain of the image space 
 - `evaluation_domain::AbstractDomain`: the domain on which the regularizer is to be evaluated
-- `grid`
-
-
-# Mandatory methods
-
-- `evaluate(::RegularizerDomain, ::Regularizer, ::ImageModel, ::AbstractArray)`:
-    Evaluate the regularization function for the given input sky image.
-- `evaluate(::Regularizer, ::ImageModel, ::AbstractArray)`:
-    Evaluate the regularization function for the given input sky image.
-- `cost(::AbstractRegularizer, ::AbstractImageModel, ::AbstractArray)`:
-    Evaluate the cost function for the given input sky image. The cost function is defined by the product of its hyperparameter and regularization function.
-- ``
+- `grid`: grid on which image is defined
 """
 abstract type AbstractRegularizer <: ContinuousMatrixDistribution end
 
@@ -27,22 +18,34 @@ abstract type AbstractRegularizer <: ContinuousMatrixDistribution end
 functionlabel(::AbstractRegularizer) = :namelessregularizer
 
 
-# function to get domain and hyper parameter
+# functions to get domains and hyperparameter
 """
-    domain(reg::AbstractRegularizer) = reg.domain
+    image_domain(reg::AbstractRegularizer)
 
-Return the computing domain of the given regularizer.
+Return the image domain of the given regularizer.
 """
-#image_domain(reg::AbstractRegularizer) = reg.image_domain
-#evaluation_domain(reg::AbstractRegularizer) = reg.evaluation_domain
+image_domain(reg::AbstractRegularizer) = reg.image_domain
 
 """
-    hyperparameter(reg::AbstractRegularizer) = reg.hyperparameter
+    evaluation_domain(reg::AbstractRegularizer)
 
-Return the hyperparameter of the given regularizer.
+Return the evaluation domain of the given regularizer.
 """
-#hyperparameter(reg::AbstractRegularizer) = reg.hyperparameter
+evaluation_domain(reg::AbstractRegularizer) = (reg.evaluation_domain, )
 
+"""
+    grid(reg::AbstractRegularizer)
+
+Return the grid on which an image to be regularized is defined.
+"""
+grid(reg::AbstractRegularizer) = reg.grid
+
+"""
+    regularizers(::AbstractRegularizer)
+
+List regularizers used.
+"""
+regularizers(r::AbstractRegularizer) = (r,)
 
 """
     evaluate(::AbstractRegularizer, ::AbstractArray)
@@ -53,11 +56,11 @@ By default, return 0.
 evaluate(reg::AbstractRegularizer, image::AbstractArray) = 0
 
 
-Base.size(d::AbstractRegularizer) = size(d.grid)
-Base.length(d::AbstractRegularizer) = length(d.grid)
+Base.size(r::AbstractRegularizer) = size(grid(r))
+Base.length(r::AbstractRegularizer) = length(grid(r))
 
-function HypercubeTransform.asflat(d::AbstractRegularizer)
-    return as(Array, size(d))
+function HypercubeTransform.asflat(r::AbstractRegularizer)
+    return as(Array, size(r))
 end
 
 
@@ -69,8 +72,8 @@ The log density of the regularizers evaluated at the input image. .
 - `reg::Regularizers`: the regularizer functions.
 - `image::AbstractMatrix{<:Real}`: the model of the input image
 """
-function Distributions._logpdf(d::AbstractRegularizer, x::AbstractMatrix{<:Real})
-    return -1*evaluate(d, x)
+function Distributions._logpdf(r::AbstractRegularizer, x::AbstractMatrix{<:Real})
+    return -1*evaluate(r, x)
 end
 
 """
@@ -85,4 +88,15 @@ Return a random sample of shape equal to the shape of the input matrix
 
 function Distributions._rand!(rng::Random.AbstractRNG, ::AbstractRegularizer, x::AbstractMatrix)
     return rand!(rng, x)
+end
+
+
+function Base.show(io::IO, r::AbstractRegularizer)
+    println(io, ' '^get(io, :indent, 0), "Regularizer:          ", functionlabel(r) )
+    println(io, ' '^get(io, :indent, 0), "Hyperparameter:       ", r.hyperparameter )
+    println(io, ' '^get(io, :indent, 0), "Evaluation Domain:    ", r.evaluation_domain )
+    id = get(io, :id, true)
+    if id
+        println(io, ' '^get(io, :indent, 0), "Image Domain:         ", image_domain(r))
+    end
 end
