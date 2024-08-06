@@ -17,4 +17,3 @@ ENV["GKSwstype"] = "nul" #hide
 
 using Comrade
 using VLBISkyRegularizers
-using Pyehtim
