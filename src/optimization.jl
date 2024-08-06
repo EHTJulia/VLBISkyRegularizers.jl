@@ -18,6 +18,11 @@ function (c::FCallback)(x, p)
     end
 end
 
+"""
+    solve_opt(post::VLBIPosterior, opttype=Optimisers.Adam(), adtype=Optimization.AutoEnzyme(); ntrials=5, maxiters=10_000, init_params=nothing, verbose=false, stride=1000)
+
+Solve for the MAP of `post` using the `opttype` optimizer.
+"""
 function solve_opt(post::VLBIPosterior, opttype=Optimisers.Adam(), adtype=Optimization.AutoEnzyme(); 
     ntrials=5, maxiters=10_000, init_params=nothing, verbose=false, stride=1000)
     tpost = asflat(post)

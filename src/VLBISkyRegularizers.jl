@@ -27,5 +27,6 @@ include("regularizers/composite.jl")
 #include("regularizers/klmem.jl")
 include("common.jl")
 include("regularizers/waveletl1norm.jl")
+include("optimization.jl")
 
 end

@@ -6,7 +6,6 @@ export WaveletL1, evaluate, WVType
 Wavelet type used for Wavelet Transform L1 Regularizer.
 By default, this is the full Daubechies 2 wavelet.
 """
-
 struct WVType{wt<:OrthoFilter, l}
     wavelet::wt
     level::l

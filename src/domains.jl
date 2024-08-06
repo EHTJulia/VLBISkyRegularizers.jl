@@ -6,7 +6,6 @@ Used to define the image and evaluation domains.
 
 See `subtypes(AbstractDomain)` for a list of possible domains.
 """
-# Image and evaluation domains
 abstract type AbstractDomain end
 
 """

@@ -63,6 +63,7 @@ global npix = 32
 grid_p = imagepixels(μas2rad(fov), μas2rad(fov), npix, npix)
 
 # Now we define the regularizers we want to use. The available regulariers are:
+using InteractiveUtils#hide
 subtypes(AbstractRegularizer)
 
 # Each regularizer must be passed with four arguments: the hyperparameter, the image domain,
@@ -84,7 +85,7 @@ regularizers = r1 + r2
 
 # ## Build Posterior
 
-# Now we build our prior and posterior. 
+# Now we build our sky model.
 using Distributions
 skymeta = (;ftot = 1.1, pulse = BSplinePulse{3}(), regularizers)
 skyprior = (
@@ -92,7 +93,22 @@ skyprior = (
     fg=Uniform(0,1)
 ) 
 skymodel = SkyModel(sky, skyprior, grid_p, metadata=skymeta)
-post = VLBIPosterior(skym, intmodel, dvis)
+
+# And next our intstrument model.
+G = SingleStokesGain() do x
+    lg = x.lg
+    gp = x.gp
+    return exp(lg + 1im*gp)
+end
+
+intpr = (
+    lg= ArrayPrior(IIDSitePrior(ScanSeg(), Normal(0.0, 0.2)); LM = IIDSitePrior(ScanSeg(), Normal(0.0, 1.0))),
+    gp= ArrayPrior(IIDSitePrior(ScanSeg(), DiagonalVonMises(0.0, inv(π^2))); refant=SEFDReference(0.0), phase=true)
+        )
+intmodel = InstrumentModel(G, intpr)
+
+# Now we can make our posterior.
+post = VLBIPosterior(skymodel, intmodel, dvis)
 
 # ## Image Reconstruction
 

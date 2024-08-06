@@ -5,9 +5,6 @@
 Pages = ["api.md"]
 ```
 
-```@docs
-VLBISkyRegularizers.VLBISkyRegularizers
-```
 
 ## Regularizers
 ```@docs
@@ -37,8 +34,14 @@ VLBISkyRegularizers.evaluate
 VLBISkyRegularizers.evaluation_domain
 VLBISkyRegularizers.grid
 VLBISkyRegularizers.image_domain
+VLBISkyRegularizers.regularizers
 VLBISkyRegularizers.solve_opt
 VLBISkyRegularizers.transform_domain
 VLBISkyRegularizers.transform_image
 VLBISkyRegularizers.transform_linear
+Distributions._logpdf
+VLBISkyRegularizers.l1_base
+VLBISkyRegularizers.tv_base
+VLBISkyRegularizers.wavelet_transform
+VLBISkyRegularizers.tsv_base
 ```
