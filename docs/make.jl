@@ -10,12 +10,15 @@ makedocs(;
     repo="https://github.com/EHTJulia/VLBISkyRegularizers.jl/blob/{commit}{path}#{line}",
     sitename="VLBISkyRegularizers.jl",
     format=MarkdownVitepress(;
-        repo="https://EHTJulia.github.io/VLBISkyRegularizers.jl",
+        repo="https://github.com/EHTJulia/VLBISkyRegularizers.jl",
         devurl = "dev",
         devbranch = "main",
     ),
     pages=[
         "Home" => "index.md",
+        "introduction.md",
+        "Tutorials" => ["tutorials/tutorial1.md"],
+        "api.md"
     ],
 )
 
