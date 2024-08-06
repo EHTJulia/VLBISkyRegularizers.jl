@@ -2,6 +2,7 @@ module VLBISkyRegularizers
 
 # import modules
 using DocStringExtensions
+using Comrade
 using ComradeBase
 using Distributions
 using HypercubeTransform
@@ -10,6 +11,7 @@ using Tullio
 using TransformVariables
 using VLBIImagePriors
 using Wavelets
+using Optimization
 using Enzyme
 import .EnzymeRules: reverse, augmented_primal
 using .EnzymeRules

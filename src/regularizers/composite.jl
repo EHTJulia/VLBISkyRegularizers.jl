@@ -1,9 +1,11 @@
 export WeightRegularizer, AddRegularizer, regularizers, evaluate, grid, image_domain, evaluation_domain
 
 """
-    AddRegularizer <: AbstractRegularizer
+    AddRegularizer{R1<:AbstractRegularizer, R2<:AbstractRegularizer} <: AbstractRegularizer
 
-Structure for adding two regularizers. The two regularizers must have the same grid and image domain.
+Structure for adding two regularizers. 
+    
+The two regularizers must have the same grid and image domain.
 """
 struct AddRegularizer{R1<:AbstractRegularizer, R2<:AbstractRegularizer} <: AbstractRegularizer
     r1::R1
@@ -21,7 +23,7 @@ struct AddRegularizer{R1<:AbstractRegularizer, R2<:AbstractRegularizer} <: Abstr
 end
 
 """
-    WeightRegularizer <: AbstractRegularizer
+    WeightRegularizer{R<:AbstractRegularizer, W<:Number} <: AbstractRegularizer
 
 Structure for weighting a regularizer by a scalar.
 """
@@ -30,6 +32,7 @@ struct WeightRegularizer{R<:AbstractRegularizer, W<:Number} <: AbstractRegulariz
     weight::W
 end
 
+# Functions for composite regularizers
 added(r1::AbstractRegularizer, r2::AbstractRegularizer) = AddRegularizer(r1, r2)
 weighted(r::AbstractRegularizer, w::Number) = WeightRegularizer(r, w)
 
@@ -44,7 +47,6 @@ end
 function regularizers(r::WeightRegularizer{R1, w}) where {R1<:AbstractRegularizer, w<:Number}
     return regularizers(r.regularizer)
 end
-
 
 function evaluate(r::AddRegularizer{R1, R2}, x::AbstractArray) where {R1<:AbstractRegularizer, R2<:AbstractRegularizer}
     return evaluate(r.r1, x) + evaluate(r.r2, x)
