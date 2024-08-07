@@ -121,10 +121,9 @@ post = VLBIPosterior(skymodel, intmodel, dvis)
 using Optimization
 using OptimizationOptimisers
 using Logging#hide
-with_logger(NullLogger()) do#hide
+global_logger(NullLogger())#hide
 xopts, ℓopts = solve_opt(post, Optimisers.Adam(), Optimization.AutoEnzyme(); 
                         ntrials=5, maxiters=10_000, verbose=false)
-end#hide
 
 # Now we plot the MAP estimate.
 using DisplayAs #hide
