@@ -121,14 +121,16 @@ post = VLBIPosterior(skymodel, intmodel, dvis)
 using Optimization
 using OptimizationOptimisers
 using Logging#hide
+gl = global_logger()#hide
 global_logger(NullLogger())#hide
 xopts, ℓopts = solve_opt(post, Optimisers.Adam(), Optimization.AutoEnzyme(); 
                         ntrials=5, maxiters=10_000, verbose=false)
+global_logger(gl)
 
 # Now we plot the MAP estimate.
 using DisplayAs #hide
 import CairoMakie as CM
 grid_plot = imagepixels(μas2rad(fov), μas2rad(fov), npix*4, npix*4)
-img = intensitymap(skymodel(post, xopts[1]), grid_plot)
+img = intensitymap(Comrade.skymodel(post, xopts[1]), grid_plot)
 fig = Comrade.imageviz(img, size(600,500));
 DisplayAs.Text(DisplayAs.PNG(fig))#hide
