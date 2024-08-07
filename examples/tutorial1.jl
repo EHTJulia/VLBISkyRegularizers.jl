@@ -122,10 +122,11 @@ post = VLBIPosterior(skymodel, intmodel, dvis)
 # The output values are sorted by order of objective value.
 using Optimization
 using OptimizationOptimisers
+using Enzyme
 using Logging#hide
 #gl = global_logger()#hide
 #global_logger(NullLogger())#hide
-xopts, ℓopts = solve_opt(post, Optimisers.Adam(), Optimization.AutoEnzyme(); ntrials=1, maxiters=1_000, verbose=false)
+xopts, ℓopts = solve_opt(post, Optimisers.Adam(), Optimization.AutoEnzyme(Enzyme.Reverse); ntrials=1, maxiters=1_000, verbose=false)
 # global_logger(gl)
 
 # Now we plot the MAP estimate.
