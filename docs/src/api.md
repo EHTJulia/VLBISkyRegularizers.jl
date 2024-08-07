@@ -40,6 +40,7 @@ VLBISkyRegularizers.transform_domain
 VLBISkyRegularizers.transform_image
 VLBISkyRegularizers.transform_linear
 Distributions._logpdf
+Distributions._rand!
 VLBISkyRegularizers.l1_base
 VLBISkyRegularizers.tv_base
 VLBISkyRegularizers.wavelet_transform

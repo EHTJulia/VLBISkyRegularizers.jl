@@ -85,7 +85,6 @@ Return a random sample of shape equal to the shape of the input matrix
 - `::Regularizers`: any set of regularizer functions
 - `x::AbstractMatrix`: input matrix
 """
-
 function Distributions._rand!(rng::Random.AbstractRNG, ::AbstractRegularizer, x::AbstractMatrix)
     return rand!(rng, x)
 end

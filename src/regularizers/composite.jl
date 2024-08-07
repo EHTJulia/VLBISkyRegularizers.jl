@@ -65,15 +65,19 @@ image_domain(r::AddRegularizer) = image_domain(r.r1)
 grid(r::WeightRegularizer) = grid(r.regularizer)
 grid(r::AddRegularizer) = grid(r.r1)
 
-function Base.show(io::IO, mime::MIME"text/plain", r::AddRegularizer)
+#function Base.show(io::IO, mime::MIME"text/plain", r::AddRegularizer)
+function Base.show(io::IO, r::AddRegularizer)
     indent = get(io, :indent, 0)
     println(io, ' '^indent, "Added Regularizer:")
 
     println(io, ' '^indent, "   Regularizer 1:")
-    show(IOContext(io, :indent => indent+6, :id => false), mime, r.r1)
+    #show(IOContext(io, :indent => indent+6, :id => false), mime, r.r1)
+    show(IOContext(io, :indent => indent+6, :id => false), r.r1)
 
     println(io, ' '^indent, "   Regularizer 2:")
-    show(IOContext(io, :indent => indent+6, :id => false), mime, r.r2)
+    #show(IOContext(io, :indent => indent+6, :id => false), mime, r.r2)
+    show(IOContext(io, :indent => indent+6, :id => false), r.r2)
+
     id = get(io, :id, true)
     if id    
         println(io, ' '^indent, "   Image Domain:   ", image_domain(r))

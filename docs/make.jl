@@ -1,6 +1,7 @@
 using VLBISkyRegularizers
 using Documenter
 using DocumenterVitepress
+using Distributions
 
 DocMeta.setdocmeta!(VLBISkyRegularizers, :DocTestSetup, :(using VLBISkyRegularizers); recursive=true)
 
