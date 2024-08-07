@@ -17,7 +17,7 @@ using Enzyme
 
         dx = zeros(size(x))
         autodiff(Enzyme.Reverse, evaluate, Active, Const(comb), Duplicated(x, dx))
-        finite_dx = grad(central_fdm(5,1), x->evaluate(comb,x), x)[1]
-        @test isapprox(dx, finite_dx,  atol=1e-1)
+        finite_dx = grad(central_fdm(3,1), x->evaluate(comb,x), x)[1]
+        @test isapprox(dx, finite_dx,  atol=1e-2)
     end
 end

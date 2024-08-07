@@ -120,8 +120,8 @@ post = VLBIPosterior(skymodel, intmodel, dvis)
 # The output values are sorted by order of objective value.
 using Optimization
 using OptimizationOptimisers
-using Suppressor#hide
-@suppress begin#hide
+using Logging#hide
+with_logger(NullLogger()) do#hide
 xopts, ℓopts = solve_opt(post, Optimisers.Adam(), Optimization.AutoEnzyme(); 
                         ntrials=5, maxiters=10_000, verbose=false)
 end#hide
