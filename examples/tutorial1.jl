@@ -79,9 +79,11 @@ subtypes(AbstractDomain)
 
 # We will use a TSV regularizer in the log domain and a wavelet-space L1-norm regularizer in the
 # linear domain, and have a log image domain.
-r1 = TSV(1, LogDomain(), ParameterDomain(), grid_p)
-r2 = WaveletL1(1, LogDomain(), LinearDomain(), WVType(), grid_p)
-regularizers = r1 + r2
+r1 = TSV(1, LinearDomain(), LogDomain(), grid_p)
+r2 = WaveletL1(1, LinearDomain(), LinearDomain(), grid_p)
+r3 = KLE(10, LinearDomain(), LinearDomain(), grid_p)
+r4 = L1(1, LinearDomain(), LinearDomain(), grid_p)
+regularizers = r1 + r2 + r3 + r4
 
 # ## Build Posterior
 
@@ -121,16 +123,15 @@ post = VLBIPosterior(skymodel, intmodel, dvis)
 using Optimization
 using OptimizationOptimisers
 using Logging#hide
-gl = global_logger()#hide
-global_logger(NullLogger())#hide
-xopts, ℓopts = solve_opt(post, Optimisers.Adam(), Optimization.AutoEnzyme(); 
-                        ntrials=5, maxiters=10_000, verbose=false)
-global_logger(gl)
+#gl = global_logger()#hide
+#global_logger(NullLogger())#hide
+xopts, ℓopts = solve_opt(post, Optimisers.Adam(), Optimization.AutoEnzyme(); ntrials=1, maxiters=1_000, verbose=false)
+# global_logger(gl)
 
 # Now we plot the MAP estimate.
 using DisplayAs #hide
 import CairoMakie as CM
 grid_plot = imagepixels(μas2rad(fov), μas2rad(fov), npix*4, npix*4)
 img = intensitymap(Comrade.skymodel(post, xopts[1]), grid_plot)
-fig = Comrade.imageviz(img, size(600,500));
+fig = imageviz(img);
 DisplayAs.Text(DisplayAs.PNG(fig))#hide

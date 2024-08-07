@@ -1,0 +1,7 @@
+  Activating project at `~/.julia/dev/VLBISkyRegularizers.jl/examples`
+   Resolving package versions...
+  No Changes to `~/.julia/dev/VLBISkyRegularizers.jl/examples/Project.toml`
+  No Changes to `~/.julia/dev/VLBISkyRegularizers.jl/examples/Manifest.toml`
+Precompiling project...
+  ✓ VLBISkyRegularizers
+  1 dependency successfully precompiled in 13 seconds. 448 already precompiled.

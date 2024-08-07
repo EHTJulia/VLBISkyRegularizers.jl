@@ -61,7 +61,7 @@ struct ALRDomain <: AbstractDomain end
 Transform an array to the normalized, non-negative image simplex domain.
 """
 transform_image(::AbstractDomain, ::AbstractArray) = error("Invalid image domain.")
-transform_image(::LinearDomain, x::AbstractArray) = abs.(x./sum(x))
+transform_image(::LinearDomain, x::AbstractArray) = abs.(x)./sum(abs.(x))
 transform_image(::LogDomain, x::AbstractArray) = to_simplex(CenteredLR(), x)
 transform_image(::CLRDomain, x::AbstractArray) = to_simplex(CenteredLR(), x)
 transform_image(::ALRDomain, x::AbstractArray) = to_simplex(AdditiveLR(), x)

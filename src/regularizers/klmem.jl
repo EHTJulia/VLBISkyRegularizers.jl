@@ -1,4 +1,4 @@
-export KLEntropy
+export KLE, klentropy_base
 
 """
     KLEntropy <: AbstractRegularizer
@@ -11,17 +11,34 @@ Regularizer using the Kullback-Leibler divergence (or a relative entropy)
 - `domain::AbstractRegularizerDomain`: the image domain where the regularization funciton will be computed.
     KLEntropy can be computed only in `LinearDomain()`.
 """
-struct KLEntropy{S<:Number,T,D<:RegularizerDomain} <: Regularizer
-    hyperparameter::S
-    prior::T
-    domain::D
+struct KLE{H<:Number,ID<:AbstractDomain,ED<:AbstractDomain,P<:AbstractArray,G<:RectiGrid} <: AbstractRegularizer
+    hyperparameter::H
+    image_domain::ID
+    evaluation_domain::ED
+    prior::P
+    grid::G
+
+    function KLE(h::Number, id::AbstractDomain, ed::AbstractDomain, g::RectiGrid)
+        fovGx, fovGy = fieldofview(g)
+        gaussPrior = modify(Gaussian(), Stretch(fovGx/2., fovGy/2.))
+        gpArray = Array(intensitymap(gaussPrior, g))
+        gpArray = gpArray ./ sum(gpArray)
+        return new{typeof(h), typeof(id), typeof(ed), typeof(gpArray), typeof(g)}(h,id,ed,gpArray,g)
+    end
+
+    function KLE(h::Number, id::AbstractDomain, ed::AbstractDomain, p::AbstractArray, g::RectiGrid)
+        # shortcut for normalizing p and enforcing positivity
+        pnorm = transform_linear(LinearDomain(), p)
+        return new{typeof(h), typeof(id), typeof(ed), typeof(pnorm), typeof(g)}(h,id,ed,pnorm,g)
+    end
+
 end
 
 # function label
-functionlabel(::KLEntropy) = :klentropy
+functionlabel(::KLE) = "KL Entropy"
 
 """
-    klentropy_base(I::IntensityMap, p::IntensityMap)
+    klentropy_base(x::AbstractArray, p::AbstractArray)
 
 Base function of the KL-Entropy norm.
 
@@ -29,62 +46,17 @@ Base function of the KL-Entropy norm.
 - `I::IntensityMap`: the image
 - `p::IntensityMap`: the prior image
 """
-@inline function klentropy_base(I::AbstractArray, p::AbstractArray)
-    # compute the total flux
-    totalflux = sum(I)
-    # compute xlogx
-    @inbounds xnorm = I ./ totalflux
-    @inbounds xnorm = xnorm
+function klentropy_base(x::AbstractArray, p::AbstractArray)
+    # shortcut for normalizing x and enforcing positivity
+    xnorm = transform_image(LinearDomain(), x)
     @inbounds xlogx = xnorm .* log.((xnorm .+ 10e-100) ./ p)
     return sum(xlogx)
 end
 
-"""
-@inline function klentropy_base_grad_pixel(I::IntensityMap, p::IntensityMap, ix::Integer, iy::Integer)
-    totalflux = sum(I)
-    xnorm = I[ix, iy]/totalflux
-    Δxnorm = (totalflux - I[ix, iy])/(totalflux^2)
-    Δxlogx = Δxnorm*log((xnorm+10e-10)/p[ix, iy]) + Δxnorm
-
-    nx = size(I, 1)
-    ny = size(I, 2)
-    exlSum = 0
-    for i = 1:ny, j = 1:nx
-        term = I[i,j]/(totalflux^2)
-        term *= log((I[i,j]/totalflux + 10e-10)/p[i,j]) + 1
-        exlSum -= term
-    end
-
-    exlSum += (I[ix,iy]/(totalflux^2))*(log((I[ix,iy]/totalflux + 10e-10)/p[ix,iy]) + 1)
-
-    return Δxlogx + exlSum
+function klentropy_base(x::AbstractArray, p::AbstractArray, w::Number)
+    return w * klentropy_base(x,p)
 end
 
-
-@inline function klentropy_base_grad(I::IntensityMap, p::IntensityMap)
-    nx = size(I, 1)
-    ny = size(I, 2)
-    grad = zeros(nx, ny)
-    for iy = 1:ny, ix = 1:nx
-        @inbounds grad[ix, iy] = klentropy_base_grad_pixel(I, p, ix, iy)
-    end
-    return grad
-end
-
-function ChainRulesCore.rrule(::typeof(klentropy_base), I::IntensityMap, p::IntensityMap)
-    y = klentropy_base(I, p)
-    function pullback(Δy)
-        fbar = NoTangent()
-        xbar = @thunk(klentropy_base_grad(I, p) .* Δy)
-        return fbar, xbar
-    end
-    return y, pullback
-end
-"""
-
-"""
-    evaluate(::AbstractRegularizer, skymodel::IntensityMap, x::IntensityMap)
-"""
-function evaluate(::LinearDomain, reg::KLEntropy, skymodel::AbstractArray, x::AbstractArray)
-    return klentropy_base(transform_linear_forward(skymodel, x), reg.prior)
+function evaluate(reg::KLE, x::AbstractArray)
+    return klentropy_base(transform_domain(reg.image_domain, reg.evaluation_domain, x), reg.prior, reg.hyperparameter)
 end

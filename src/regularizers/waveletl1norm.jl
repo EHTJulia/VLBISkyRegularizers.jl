@@ -49,6 +49,15 @@ struct WaveletL1{H<:Number,ID<:AbstractDomain,ED<:AbstractDomain,WT<:WVType, G<:
     evaluation_domain::ED
     w_type::WT
     grid::G
+
+    function WaveletL1(h::Number, id::AbstractDomain, ed::AbstractDomain, wt::WVType, g::RectiGrid)
+        return new{typeof(h), typeof(id), typeof(ed), typeof(wt), typeof(g)}(h,id,ed,wt,g)
+    end
+
+    function WaveletL1(h::Number, id::AbstractDomain, ed::AbstractDomain, g::RectiGrid)
+        wt = WVType()
+        return new{typeof(h), typeof(id), typeof(ed), typeof(wt), typeof(g)}(h,id,ed,wt,g)
+    end 
 end
 
 # function label
@@ -128,4 +137,23 @@ function EnzymeRules.reverse(config::ConfigWidth{1}, func::Const{typeof(wavelet_
     autodiff(Enzyme.Reverse, l1_base, Active, Duplicated(p, ddx))
     x.dval .+=  inv_wavelet_transform(ddx, wv.val) .* dret.val
     return (nothing, nothing)
+end
+
+function Base.show(io::IO, r::WaveletL1)
+    println(io, ' '^get(io, :indent, 0), "Regularizer:          ", functionlabel(r) )
+    println(io, ' '^get(io, :indent, 0), "Hyperparameter:       ", r.hyperparameter )
+    println(io, ' '^get(io, :indent, 0), "Evaluation Domain:    ", r.evaluation_domain )
+    if isnothing(r.w_type.level)
+        println(io, ' '^get(io, :indent, 0), "Wavelet:              ", "Full ", r.w_type.wavelet.name)
+    else
+        println(io, ' '^get(io, :indent, 0), "Wavelet:              ", r.w_type.level, "-Level ", r.w_type.wavelet.name)
+    end
+    id = get(io, :id, true)
+    if id
+        println(io, ' '^get(io, :indent, 0), "Image Domain:         ", image_domain(r))
+        fovX, fovY = rad2μas.(values(fieldofview(grid(r))))
+        println(io, ' '^get(io, :indent, 0), "Grid FOV:             ", fovX, "x", fovY, " μas")
+        sx, sy = size(grid(r))
+        println(io, ' '^get(io, :indent, 0), "Grid Size:            ", sx, "x", sy)
+    end
 end

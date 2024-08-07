@@ -81,6 +81,10 @@ function Base.show(io::IO, r::AddRegularizer)
     id = get(io, :id, true)
     if id    
         println(io, ' '^indent, "   Image Domain:   ", image_domain(r))
+        fovX, fovY = rad2μas.(values(fieldofview(grid(r))))
+        println(io, ' '^indent, "   Grid FOV:             ", fovX, "x", fovY, " μas")
+        sx, sy = size(grid(r))
+        println(io, ' '^indent, "   Grid Size:            ", sx, "x", sy)
     end
     
 end
@@ -95,5 +99,9 @@ function Base.show(io::IO, r::WeightRegularizer)
     id = get(io, :id, true)
     if id    
         println(io, ' '^indent, "   Image Domain:   ", image_domain(r))
+        fovX, fovY = rad2μas.(values(fieldofview(grid(r))))
+        println(io, ' '^indent, "   Grid FOV:             ", fovX, "x", fovY, " μas")
+        sx, sy = size(grid(r))
+        println(io, ' '^indent, "   Grid Size:            ", sx, "x", sy)
     end
 end

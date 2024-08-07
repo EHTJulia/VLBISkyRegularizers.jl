@@ -97,5 +97,9 @@ function Base.show(io::IO, r::AbstractRegularizer)
     id = get(io, :id, true)
     if id
         println(io, ' '^get(io, :indent, 0), "Image Domain:         ", image_domain(r))
+        fovX, fovY = rad2μas.(values(fieldofview(grid(r))))
+        println(io, ' '^get(io, :indent, 0), "Grid FOV:             ", fovX, "x", fovY, " μas")
+        sx, sy = size(grid(r))
+        println(io, ' '^get(io, :indent, 0), "Grid Size:            ", sx, "x", sy)
     end
 end
