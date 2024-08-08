@@ -126,7 +126,7 @@ using Enzyme
 using Logging#hide
 #gl = global_logger()#hide
 #global_logger(NullLogger())#hide
-xopts, ℓopts = solve_opt(post, Optimisers.Adam(), Optimization.AutoEnzyme(Enzyme.Reverse); ntrials=1, maxiters=1_000, verbose=false)
+xopts, ℓopts = solve_opt(post, Optimisers.Adam(), Optimization.AutoEnzyme(Enzyme.Reverse); ntrials=1, maxiters=1_000, verbose=true)
 # global_logger(gl)
 
 # Now we plot the MAP estimate.
