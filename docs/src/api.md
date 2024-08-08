@@ -16,6 +16,7 @@ VLBISkyRegularizers.TV
 VLBISkyRegularizers.WaveletL1
 VLBISkyRegularizers.WeightRegularizer
 VLBISkyRegularizers.WVType
+VLBISkyRegularizers.KLE
 ```
 
 ## Domains
@@ -45,4 +46,5 @@ VLBISkyRegularizers.l1_base
 VLBISkyRegularizers.tv_base
 VLBISkyRegularizers.wavelet_transform
 VLBISkyRegularizers.tsv_base
+VLBISkyRegularizers.klentropy_base
 ```
