@@ -82,7 +82,7 @@ transform_linear(::ALRDomain, x::AbstractArray) = to_simplex(AdditiveLR(), x)
 
 # Evaluation transform
 """
-    transform_domain(ImageDomain::AbstractDomain, EvaluationDomain::AbstractDomain x::AbstractArray)
+    transform_domain(ImageDomain::AbstractDomain, EvaluationDomain::AbstractDomain, x::AbstractArray)
 
 Transform an array from the image domain to the evaluation domain.
 """

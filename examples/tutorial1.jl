@@ -120,5 +120,19 @@ post = VLBIPosterior(skymodel, intmodel, dvis)
 # the optimization `ntrials` number of times. Each optimization trial first runs half of `maxiters`
 # number of iterations, adds some random noise, then runs `maxiters` iterations from that point.
 # The output values are sorted by order of objective value.
+using Optimization
+using OptimizationOptimisers
+using Enzyme
+using Suppressor
+output = @capture_err xopts, ℓopts = solve_opt(post, Optimisers.Adam(), Optimization.AutoEnzyme(Enzyme.Reverse); ntrials=1, maxiters=1_000, verbose=false)
+open("tt.txt", "w") do io
+    write(io, output)
+end
 
 # Now we plot the MAP estimate.
+using DisplayAs #hide
+import CairoMakie as CM
+grid_plot = imagepixels(μas2rad(fov), μas2rad(fov), npix*4, npix*4)
+img = intensitymap(Comrade.skymodel(post, xopts[1]), grid_plot)
+fig = imageviz(img);
+DisplayAs.text(DisplayAs.PNG(fig))#hide

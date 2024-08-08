@@ -5,11 +5,32 @@ using Distributions
 
 DocMeta.setdocmeta!(VLBISkyRegularizers, :DocTestSetup, :(using VLBISkyRegularizers); recursive=true)
 
+ENV["JULIA_DEBUG"] = Documenter
 makedocs(;
     modules=[VLBISkyRegularizers],
     authors="Andy Nilipour, Kazunori Akiyama",
     repo="https://github.com/EHTJulia/VLBISkyRegularizers.jl/blob/{commit}{path}#{line}",
     sitename="VLBISkyRegularizers.jl",
+    warnonly=true,
+    format=MarkdownVitepress(;
+        repo="https://github.com/EHTJulia/VLBISkyRegularizers.jl",
+        devurl = "dev",
+        devbranch = "main",
+    ),
+    pages=[
+        "Home" => "index.md",
+        "introduction.md",
+        "Tutorials" => ["tutorials/tutorial1.md"],
+        "api.md"
+    ],
+)
+
+makedocs(;
+    modules=[VLBISkyRegularizers],
+    authors="Andy Nilipour, Kazunori Akiyama",
+    repo="https://github.com/EHTJulia/VLBISkyRegularizers.jl/blob/{commit}{path}#{line}",
+    sitename="VLBISkyRegularizers.jl",
+    warnonly=false,
     format=MarkdownVitepress(;
         repo="https://github.com/EHTJulia/VLBISkyRegularizers.jl",
         devurl = "dev",

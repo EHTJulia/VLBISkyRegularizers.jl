@@ -36,9 +36,9 @@ function solve_opt(post::VLBIPosterior, opttype=Optimisers.Adam(), adtype=Optimi
         sol = verbose ? solve(prob, opttype; maxiters=maxiters/2, g_tol=1e-1, callback=cb) : solve(prob, opttype; maxiters=maxiters/2, g_tol=1e-1)
 
         prob2 = OptimizationProblem(g, sol.u .+ (prior_sample(tpost).*0.2), nothing)
-        sol = verbose ? solve(prob2, opttype; maxiters=maxiters, g_tol=1e-1, callback=cb) : solve(prob2, opttype; maxiters=maxiters, g_tol=1e-1)
-        
-        return transform(tpost, sol), sol
+        sol2 = verbose ? solve(prob2, opttype; maxiters=maxiters, g_tol=1e-1, callback=cb) : solve(prob2, opttype; maxiters=maxiters, g_tol=1e-1)
+
+        return transform(tpost, sol2), sol2
     end
     
     xopts = [mapout[i][1] for i in 1:ntrials]
