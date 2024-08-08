@@ -124,15 +124,17 @@ using Optimization
 using OptimizationOptimisers
 using Enzyme
 using Logging#hide
-#gl = global_logger()#hide
-#global_logger(NullLogger())#hide
+gl = global_logger()#hide
+global_logger(NullLogger())#hide
 xopts, ℓopts = solve_opt(post, Optimisers.Adam(), Optimization.AutoEnzyme(Enzyme.Reverse); ntrials=1, maxiters=1_000, verbose=true)
-# global_logger(gl)
+global_logger(gl)
 
 # Now we plot the MAP estimate.
 using DisplayAs #hide
 import CairoMakie as CM
+xopts
+
 grid_plot = imagepixels(μas2rad(fov), μas2rad(fov), npix*4, npix*4)
 img = intensitymap(Comrade.skymodel(post, xopts[1]), grid_plot)
-fig = imageviz(img);
+fig = imageviz(img)
 DisplayAs.Text(DisplayAs.PNG(fig))#hide
