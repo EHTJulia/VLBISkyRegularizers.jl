@@ -28,5 +28,7 @@ include("regularizers/klmem.jl")
 include("common.jl")
 include("regularizers/waveletl1norm.jl")
 include("optimization.jl")
+include("polarized.jl")
+include("regularizers/polarized.jl")
 
 end

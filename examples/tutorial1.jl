@@ -124,6 +124,8 @@ using Optimization
 using OptimizationOptimisers
 using Enzyme
 using Suppressor
+local xopts
+local ℓopts
 output = @capture_err xopts, ℓopts = solve_opt(post, Optimisers.Adam(), Optimization.AutoEnzyme(Enzyme.Reverse); ntrials=1, maxiters=1_000, verbose=false)
 open("tt.txt", "w") do io
     write(io, output)
