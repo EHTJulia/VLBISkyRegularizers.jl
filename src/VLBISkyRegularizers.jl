@@ -12,6 +12,7 @@ using TransformVariables
 using VLBIImagePriors
 using Wavelets
 using Optimization
+using OptimizationOptimisers
 using Enzyme
 import .EnzymeRules: reverse, augmented_primal
 using .EnzymeRules
