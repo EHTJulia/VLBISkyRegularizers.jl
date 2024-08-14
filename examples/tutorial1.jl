@@ -8,6 +8,7 @@ Pkg.develop(; path=joinpath(__DIR, ".."), io=pkg_io) #hide
 Pkg.instantiate(; io=pkg_io) #hide
 Pkg.precompile(; io=pkg_io) #hide
 close(pkg_io) #hide
+println(Pkg.status())
 
 ENV["GKSwstype"] = "nul"; #hide
 
@@ -123,12 +124,10 @@ post = VLBIPosterior(skymodel, intmodel, dvis)
 using Optimization
 using OptimizationOptimisers
 using Enzyme
-using Suppressor
-local xopts
-local ℓopts
-output = @capture_err xopts, ℓopts = solve_opt(post, Optimisers.Adam(), Optimization.AutoEnzyme(); ntrials=1, maxiters=1_000, verbose=false)
-open("tt.txt", "w") do io
-    write(io, output)
+using Logging
+logger = Logging.SimpleLogger(Logging.Error)
+xopts, ℓopts = Logging.with_logger(logger) do
+    solve_opt(post, Optimisers.Adam(), Optimization.AutoEnzyme(); ntrials=1, maxiters=10_000, verbose=false)
 end
 
 # Now we plot the MAP estimate.
@@ -137,4 +136,4 @@ import CairoMakie as CM
 grid_plot = imagepixels(μas2rad(fov), μas2rad(fov), npix*4, npix*4)
 img = intensitymap(Comrade.skymodel(post, xopts[1]), grid_plot)
 fig = imageviz(img);
-DisplayAs.text(DisplayAs.PNG(fig))#hide
+DisplayAs.Text(DisplayAs.PNG(fig))#hide
