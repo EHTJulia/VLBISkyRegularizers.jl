@@ -31,7 +31,7 @@ image_domain(reg::AbstractRegularizer) = reg.image_domain
 
 Return the evaluation domain of the given regularizer.
 """
-evaluation_domain(reg::AbstractRegularizer) = (reg.evaluation_domain, )
+evaluation_domain(reg::AbstractRegularizer) = reg.evaluation_domain
 
 """
     grid(reg::AbstractRegularizer)

@@ -8,7 +8,7 @@ Pkg.develop(; path=joinpath(__DIR, ".."), io=pkg_io) #hide
 Pkg.instantiate(; io=pkg_io) #hide
 Pkg.precompile(; io=pkg_io) #hide
 close(pkg_io) #hide
-println(Pkg.status())
+println(Pkg.status()) #hide
 
 ENV["GKSwstype"] = "nul"; #hide
 
@@ -81,18 +81,16 @@ subtypes(AbstractDomain)
 # We will use a TSV regularizer in the log domain and a wavelet-space L1-norm regularizer in the
 # linear domain, and have a log image domain.
 r1 = TSV(1, LinearDomain(), LogDomain(), grid_p)
-r2 = WaveletL1(1, LinearDomain(), LinearDomain(), grid_p)
-r3 = KLE(10, LinearDomain(), LinearDomain(), grid_p)
-r4 = L1(1, LinearDomain(), LinearDomain(), grid_p)
-regularizers = r1 + r2 + r3 + r4
+r2 = WaveletL1(1, LinearDomain(), ParameterDomain(), grid_p)
+regs = r1 + r2
 
 # ## Build Posterior
 
 # Now we build our sky model.
 using Distributions
-skymeta = (;ftot = 1.1, pulse = BSplinePulse{3}(), regularizers)
+skymeta = (;ftot = 1.1, pulse = BSplinePulse{3}(), regs)
 skyprior = (
-    impixel=regularizers,
+    impixel=regs,
     fg=Uniform(0,1)
 ) 
 skymodel = SkyModel(sky, skyprior, grid_p, metadata=skymeta)
@@ -124,11 +122,11 @@ post = VLBIPosterior(skymodel, intmodel, dvis)
 using Optimization
 using OptimizationOptimisers
 using Enzyme
-using Logging
-logger = Logging.SimpleLogger(Logging.Error)
-xopts, ℓopts = Logging.with_logger(logger) do
-    solve_opt(post, Optimisers.Adam(), Optimization.AutoEnzyme(); ntrials=1, maxiters=10_000, verbose=false)
-end
+using Logging#hide
+logger = Logging.SimpleLogger(Logging.Error)#hide
+xopts, ℓopts = Logging.with_logger(logger) do#hide
+solve_opt(post, Optimisers.Adam(), Optimization.AutoEnzyme(); ntrials=5, maxiters=10_000, verbose=false)
+end#hide
 
 # Now we plot the MAP estimate.
 using DisplayAs #hide

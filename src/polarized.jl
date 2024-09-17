@@ -19,6 +19,13 @@ function LinearPoincareSphereAngles2Map(I, p, θ, grid)
     return PoincareSphere2Map(I, p, (Q, U, V), grid)
 end
 
+function LinearPoincareSphereAngles2Map(I, p, θ, grid, cutoff::BitArray)
+    Q = cos.(2θ)
+    U = sin.(2θ)
+    V = zeros(size(θ))
+    return PoincareSphere2Map(I, p, (Q.*cutoff, U.*cutoff, V.*cutoff), grid)
+end
+
 function LinearPoincareSphereAngles2Map(I::IntensityMap, p, θ)
     return LinearPoincareSphereAngles2Map(baseimage(I), p, θ, axisdims(I))
 end

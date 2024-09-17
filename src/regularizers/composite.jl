@@ -56,14 +56,20 @@ function evaluate(r::WeightRegularizer{R1, w}, x::AbstractArray) where {R1<:Abst
     return r.weight*evaluate(r.regularizer, x)
 end
 
-evaluation_domain(r::WeightRegularizer) = (evaluation_domain(r.regularizer),)
-evaluation_domain(r::AddRegularizer) = (evaluation_domain(r.r1)..., evaluation_domain(r.r2)...)
+evaluation_domain(r::WeightRegularizer) = evaluation_domain(r.regularizer)
+evaluation_domain(r::AddRegularizer) = (evaluation_domain(r.r1), evaluation_domain(r.r2))
 
 image_domain(r::WeightRegularizer) = image_domain(r.regularizer)
 image_domain(r::AddRegularizer) = image_domain(r.r1)
 
 grid(r::WeightRegularizer) = grid(r.regularizer)
 grid(r::AddRegularizer) = grid(r.r1)
+
+Base.size(r::WeightRegularizer) = size(r.regularizer)
+
+function Distributions._rand!(rng::Random.AbstractRNG, r::WeightRegularizer, x::AbstractMatrix)
+    return rand!(rng, r.regularizer, x)
+end
 
 #function Base.show(io::IO, mime::MIME"text/plain", r::AddRegularizer)
 function Base.show(io::IO, r::AddRegularizer)
@@ -100,7 +106,7 @@ function Base.show(io::IO, r::WeightRegularizer)
     if id    
         println(io, ' '^indent, "   Image Domain:   ", image_domain(r))
         fovX, fovY = rad2μas.(values(fieldofview(grid(r))))
-        println(io, ' '^indent, "   Grid FOV:             ", fovX, "x", fovY, " μas")
+        println(io, ' '^indent, "   Grid FOV:             ", round(fovX, digits=2), "x", round(fovY, digits=2), " μas")
         sx, sy = size(grid(r))
         println(io, ' '^indent, "   Grid Size:            ", sx, "x", sy)
     end
