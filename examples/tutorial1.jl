@@ -44,12 +44,12 @@ dvis = extract_table(obs, Visibilities())
 # pixel raster is convolved, and `regularizers` is the set of regularizers we will be using.
 function sky(θ, metadata)
     (; impixel, fg) = θ
-    (; ftot, pulse, regularizers) = metadata
+    (; ftot, pulse, regs) = metadata
 
     ## Transform image to the image simplex domain and scale
-    rast = ftot*(1-fg).*transform_image(image_domain(regularizers), impixel)
+    rast = ftot*(1-fg).*transform_image(image_domain(regs), impixel)
 	## Form the image
-    img = IntensityMap(rast, VLBISkyRegularizers.grid(regularizers))
+    img = IntensityMap(rast, VLBISkyRegularizers.grid(regs))
     m = ContinuousImage(img, pulse)
     ## Add an extended Gaussian
     gauss = modify(Gaussian(), Stretch(μas2rad(250.0)), Renormalize(fg*ftot))
@@ -88,7 +88,7 @@ regs = r1 + r2
 
 # Now we build our sky model.
 using Distributions
-skymeta = (;ftot = 1.1, pulse = BSplinePulse{3}(), regs)
+skymeta = (;ftot = 1.1, pulse = BSplinePulse{3}(), regs = regs)
 skyprior = (
     impixel=regs,
     fg=Uniform(0,1)
