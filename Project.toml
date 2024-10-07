@@ -19,7 +19,7 @@ VLBIImagePriors = "b1ba175b-8447-452c-b961-7db2d6f7a029"
 Wavelets = "29a6e085-ba6d-5f35-a997-948ac2efa89a"
 
 [compat]
-Comrade = "0.10"
+Comrade = "0.10, 0.11"
 ComradeBase = "0.7"
 Distributions = "0.25"
 Enzyme = "0.12"
