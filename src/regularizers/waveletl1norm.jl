@@ -109,14 +109,14 @@ end
 
 # Custom rules for wavelet transform
 # For some reason, Enzyme sometimes want wv as a Const, sometimes as a MixedDuplicated, so implement both
-function EnzymeRules.augmented_primal(config::ConfigWidth{1}, func::Const{typeof(wavelet_l1_base)}, ::Type{<:Active}, x::Duplicated, wv::MixedDuplicated)
+function EnzymeRules.augmented_primal(config::RevConfigWidth{1}, func::Const{typeof(wavelet_l1_base)}, ::Type{<:Active}, x::Duplicated, wv::MixedDuplicated)
     # Compute primal
     primal = func.val(x.val, wv.val)
     # Return an AugmentedReturn object with shadow = nothing
     return AugmentedReturn(primal, nothing, x.val)
 end
 
-function EnzymeRules.reverse(config::ConfigWidth{1}, func::Const{typeof(wavelet_l1_base)}, dret::Active, tape, x::Duplicated, wv::MixedDuplicated)
+function EnzymeRules.reverse(config::RevConfigWidth{1}, func::Const{typeof(wavelet_l1_base)}, dret::Active, tape, x::Duplicated, wv::MixedDuplicated)
     ddx = zeros(size(x.val))
     p = wavelet_transform(x.val, wv.val)
     autodiff(Enzyme.Reverse, l1_base, Active, Duplicated(p, ddx))
@@ -124,14 +124,14 @@ function EnzymeRules.reverse(config::ConfigWidth{1}, func::Const{typeof(wavelet_
     return (nothing, nothing)
 end
 
-function EnzymeRules.augmented_primal(config::ConfigWidth{1}, func::Const{typeof(wavelet_l1_base)}, ::Type{<:Active}, x::Duplicated, wv::Const)
+function EnzymeRules.augmented_primal(config::RevConfigWidth{1}, func::Const{typeof(wavelet_l1_base)}, ::Type{<:Active}, x::Duplicated, wv::Const)
     # Compute primal (not needed here?)
     primal = func.val(x.val, wv.val)
     # Return an AugmentedReturn object with shadow = nothing
     return AugmentedReturn(nothing, nothing, x.val)
 end
 
-function EnzymeRules.reverse(config::ConfigWidth{1}, func::Const{typeof(wavelet_l1_base)}, dret::Active, tape, x::Duplicated, wv::Const)
+function EnzymeRules.reverse(config::RevConfigWidth{1}, func::Const{typeof(wavelet_l1_base)}, dret::Active, tape, x::Duplicated, wv::Const)
     ddx = zeros(size(x.val))
     p = wavelet_transform(x.val, wv.val)
     autodiff(Enzyme.Reverse, l1_base, Active, Duplicated(p, ddx))
